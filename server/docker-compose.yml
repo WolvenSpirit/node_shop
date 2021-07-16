@@ -1,0 +1,34 @@
+version: "3.3"
+
+services: 
+    mariadb:
+        image: mariadb:10
+        environment: 
+            MYSQL_ROOT_PASSWORD: toor
+        volumes: 
+            - mdb:/var/lib/mysql
+        ports: 
+            - 3306:3306
+        networks: 
+            - linknet
+            
+    http_server:
+        image: s:latest
+        ports: 
+            - 9003:9003
+        networks: 
+            - linknet
+        environment: 
+            PORT: 9003
+            DB_HOST: mariadb
+            DB_PORT: 3306
+            DB_NAME: node_shop_01
+            DB_USER: root
+            DB_PASSWORD: toor
+        
+networks: 
+    linknet:
+
+volumes: 
+    mdb:
+    
