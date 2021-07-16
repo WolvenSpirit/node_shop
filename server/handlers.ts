@@ -7,7 +7,8 @@ const cfg = new config();
 export const router = express.Router();
 
 router.get("/", async (r: Request, wr: Response)=> {
-    wr.write(`<div>...</div>`);
+    console.log(cfg.template);
+    wr.write(`${cfg.template}`);
     wr.end();
 });
 
@@ -21,5 +22,11 @@ router.get("/items", async (r: Request, wr: Response)=> {
     });
     wr.setHeader("Content-Type","application/json");
     wr.write(cfg.schema);
+    wr.end();
+});
+
+router.get("/app.js", async (r: Request, wr: Response)=> {
+    wr.setHeader("Content-Type","application/javascript");
+    wr.write(cfg.appjs);
     wr.end();
 });

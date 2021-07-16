@@ -35,7 +35,7 @@ var config = /** @class */ (function () {
             }
             _this.schema = data;
         });
-        fs.readFile("../client/index.html", 'utf8', function (err, data) {
+        fs.readFile("./client_build/index.html", 'utf8', function (err, data) {
             if (data === undefined) {
                 console.log("index.html read fail");
                 return;

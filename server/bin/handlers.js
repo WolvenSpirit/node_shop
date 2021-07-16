@@ -47,7 +47,7 @@ var cfg = new config_1.config();
 exports.router = express_1.default.Router();
 exports.router.get("/", function (r, wr) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        wr.write("<div>...</div>");
+        wr.write("" + cfg.template);
         wr.end();
         return [2 /*return*/];
     });
