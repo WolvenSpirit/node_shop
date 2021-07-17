@@ -47,6 +47,7 @@ var cfg = new config_1.config();
 exports.router = express_1.default.Router();
 exports.router.get("/", function (r, wr) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
+        console.log(cfg.template);
         wr.write("" + cfg.template);
         wr.end();
         return [2 /*return*/];
@@ -65,6 +66,14 @@ exports.router.get("/items", function (r, wr) { return __awaiter(void 0, void 0,
         });
         wr.setHeader("Content-Type", "application/json");
         wr.write(cfg.schema);
+        wr.end();
+        return [2 /*return*/];
+    });
+}); });
+exports.router.get("/app.js", function (r, wr) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        wr.setHeader("Content-Type", "application/javascript");
+        wr.write(cfg.appjs);
         wr.end();
         return [2 /*return*/];
     });

@@ -39,6 +39,19 @@ exports.db = mysql_1.default.createPool({
 });
 app.use(express_1.default.json());
 app.use(handlers_1.router);
-app.listen(port, function () {
+var server = app.listen(port, function () {
     console.log("Listening on port " + port + "...");
+});
+function shutdown() {
+    console.log("Server closing");
+    server.close();
+    exports.db.end();
+}
+process.on('SIGINT', function () {
+    console.info('Sigint received');
+    shutdown();
+});
+process.on('SIGTERM', function () {
+    console.info('Sigterm received');
+    shutdown();
 });

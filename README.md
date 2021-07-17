@@ -8,6 +8,8 @@ Setup using Makefile:
 
 ```bash
 
+cd server
+
 make build run
 
 ```

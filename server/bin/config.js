@@ -26,6 +26,7 @@ var config = /** @class */ (function () {
         var _this = this;
         this.schema = "";
         this.template = "";
+        this.appjs = "";
         fs.readFile("./schema.json", 'utf8', function (err, data) {
             if (err)
                 throw err;
@@ -35,12 +36,19 @@ var config = /** @class */ (function () {
             }
             _this.schema = data;
         });
-        fs.readFile("./client_build/index.html", 'utf8', function (err, data) {
+        fs.readFile("./bin/client_build/index.html", 'utf8', function (err, data) {
             if (data === undefined) {
                 console.log("index.html read fail");
                 return;
             }
             _this.template = data;
+        });
+        fs.readFile("./bin/client_build/js/app.js", 'utf8', function (err, data) {
+            if (data === undefined) {
+                console.log("app.js read fail");
+                return;
+            }
+            _this.appjs = data;
         });
     }
     return config;

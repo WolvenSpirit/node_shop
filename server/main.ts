@@ -9,7 +9,7 @@ const app = express();
 
 const port = parseInt(process.env.PORT as string,10);
 
-export const db = mysql.createPool({
+export const db: mysql.Pool = mysql.createPool({
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT as string,10),
     database: process.env.DB_NAME,
@@ -21,8 +21,24 @@ app.use(express.json());
 
 app.use(router);
 
-app.listen(port, ()=> {
+let server = app.listen(port, ()=> {
 
     console.log(`Listening on port ${port}...`)
 
+});
+
+function shutdown(): void {
+    console.log("Server closing")
+    server.close()
+    db.end()
+}
+
+process.on('SIGINT',()=>{
+    console.info('Sigint received')
+    shutdown();
+});
+
+process.on('SIGTERM',()=>{
+    console.info('Sigterm received')
+    shutdown();
 });
