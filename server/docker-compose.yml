@@ -4,7 +4,10 @@ services:
     mariadb:
         image: mariadb:10
         environment: 
-            MYSQL_ROOT_PASSWORD: toor
+            MYSQL_DATABASE: node_shop_01
+            MYSQL_USER: ns01
+            MYSQL_PASSWORD: change-me
+            MYSQL_ROOT_PASSWORD: change-me-also
         volumes: 
             - mdb:/var/lib/mysql
         ports: 
@@ -23,8 +26,9 @@ services:
             DB_HOST: mariadb
             DB_PORT: 3306
             DB_NAME: node_shop_01
-            DB_USER: root
-            DB_PASSWORD: toor
+            DB_USER: ns01
+            DB_PASSWORD: change-me
+            RUN: dev
         
 networks: 
     linknet:

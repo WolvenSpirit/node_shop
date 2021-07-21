@@ -1,6 +1,7 @@
 import express from "express";
 import * as dotenv from "dotenv";
-import {router} from "./handlers";
+import {api} from "./api";
+import {router} from "./decorators";
 import mysql from "mysql";
 
 dotenv.config();
@@ -18,6 +19,8 @@ export const db: mysql.Pool = mysql.createPool({
 });
 
 app.use(express.json());
+
+let apiInstance = new api();
 
 app.use(router);
 
