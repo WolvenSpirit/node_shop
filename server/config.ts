@@ -1,4 +1,7 @@
 import * as fs from 'fs';
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 export class config {
     public schema: string = "";
@@ -6,24 +9,24 @@ export class config {
     public appjs: string = "";
 
     constructor() {
-        fs.readFile("./schema.json",'utf8',(err,data)=>{
+        fs.readFile(process.env.DB_Q as fs.PathLike,'utf8',(err,data)=>{
             if(err) throw err;
             if(data === undefined) {
-                console.log("schema json read fail");
+                console.log("schema read fail");
                 return
             }
             this.schema = data;
         });
-        fs.readFile("./bin/client_build/index.html",'utf8',(err,data)=> {
+        fs.readFile(process.env.ENTRYPOINT as fs.PathLike,'utf8',(err,data)=> {
             if(data === undefined) {
-                console.log("index.html read fail");
+                console.log("entrypoint read fail");
                 return
             }
             this.template = data;
         });
-        fs.readFile("./bin/client_build/js/app.js",'utf8',(err,data)=> {
+        fs.readFile(process.env.JS_BUNDLE as fs.PathLike,'utf8',(err,data)=> {
             if(data === undefined) {
-                console.log("app.js read fail");
+                console.log("js bundle read fail");
                 return
             }
             this.appjs = data;

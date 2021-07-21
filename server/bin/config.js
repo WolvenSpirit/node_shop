@@ -21,31 +21,33 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.config = void 0;
 var fs = __importStar(require("fs"));
+var dotenv = __importStar(require("dotenv"));
+dotenv.config();
 var config = /** @class */ (function () {
     function config() {
         var _this = this;
         this.schema = "";
         this.template = "";
         this.appjs = "";
-        fs.readFile("./schema.json", 'utf8', function (err, data) {
+        fs.readFile(process.env.DB_Q, 'utf8', function (err, data) {
             if (err)
                 throw err;
             if (data === undefined) {
-                console.log("schema json read fail");
+                console.log("schema read fail");
                 return;
             }
             _this.schema = data;
         });
-        fs.readFile("./bin/client_build/index.html", 'utf8', function (err, data) {
+        fs.readFile(process.env.ENTRYPOINT, 'utf8', function (err, data) {
             if (data === undefined) {
-                console.log("index.html read fail");
+                console.log("entrypoint read fail");
                 return;
             }
             _this.template = data;
         });
-        fs.readFile("./bin/client_build/js/app.js", 'utf8', function (err, data) {
+        fs.readFile(process.env.JS_BUNDLE, 'utf8', function (err, data) {
             if (data === undefined) {
-                console.log("app.js read fail");
+                console.log("js bundle read fail");
                 return;
             }
             _this.appjs = data;

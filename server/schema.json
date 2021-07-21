@@ -1,16 +1,20 @@
 {
-    "up":{
+    "migrate_up":{
         "items":"create table items (id serial primary key, name varchar(255), description varchar(255), price double, created timestamp default NOW());"
     },
-    "down":{
+    "migrate_down":{
         "items":"drop table items"
     },
     "queries":{
         "insert":{
-            "items":"insert into items (name,description,price) values ('Samsung Galaxy S21', '...',750.30);"
+            "item":"insert into items (name,description,price) values ('Samsung Galaxy S21', '...',750.30);"
         },
         "select":{
-            "all_items":"select name, description, price from items order by id;"
+            "all_items":"select name, description, price from items order by id;",
+            "item_id":"select name, description, price from items where ?? = ?"
+        },
+        "delete":{
+            "item_id":"delete from items where ?? = ?"
         }
     }
 }
