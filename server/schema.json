@@ -1,17 +1,28 @@
 {
     "migrate_up":{
-        "items":"create table items (id serial primary key, name varchar(255), description varchar(255), price double, created timestamp default NOW());"
+        "users":"create table users (id serial primary key, email varchar(255) unique, password varchar(255) unique, role integer, created timestamp default NOW())",
+        "items":"create table items (id serial primary key, name varchar(255) unique, description varchar(255), price double, created timestamp default NOW())",
+        "orders":"create table orders (id serial primary key, user_id int, details text, total_price double, paid boolean, created timestamp default NOW())"
     },
     "migrate_down":{
-        "items":"drop table items"
+        "users":"drop table users;",
+        "items":"drop table items;",
+        "orders":"drop table orders;"
     },
     "queries":{
         "insert":{
-            "item":"insert into items (name,description,price) values ('Samsung Galaxy S21', '...',750.30);"
+            "user":"insert into users (email, password) values( ?, ?)",
+            "item":"insert into items (name,description,price) values ( ?, ?, ?)",
+            "order":"insert into orders (user_id, details, total_price) values() "
         },
         "select":{
+            "user":"select id, username, password, created from users where ?? = ?",
             "all_items":"select name, description, price from items order by id;",
-            "item_id":"select name, description, price from items where ?? = ?"
+            "item":"select name, description, price from items where ?? = ?" ,
+            "order":"select orders.id as order_id, orders.user_id, orders.details as order_details, orders.total_price, orders.created as order_created_at, users.email as user_email, users.created as user_created_at from orders join users on orders.user_id == users.id where orders.user_id = ?"           
+        },
+        "update":{
+            "order_paid":"update orders set paid = true where ?? = ? "
         },
         "delete":{
             "item_id":"delete from items where ?? = ?"

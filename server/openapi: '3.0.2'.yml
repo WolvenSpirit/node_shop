@@ -1,0 +1,111 @@
+openapi: '3.0.2'
+info:
+  title: Node_Shop
+  version: '1.0'
+servers:
+  - url: http://localhost:9003
+paths:
+  /:
+    get:
+      responses:
+        '200':
+          description: Serves the entrypoint which loads the React application
+  /app.js:
+    get:
+      responses:
+        '200':
+          description: Serves the built js bundle required by the entrypoint
+  
+  /login:
+    post:
+      responses:
+        '200':
+          description: Login credentials AJAX to endpoint
+        '400':
+          description: Bad Request
+  
+  /register:
+    post:
+      responses:
+        '200':
+          description: Register user is processed by the server endpoint
+        '400':
+          description: Bad Request 
+
+  /item:
+    get:
+      requestBody:
+        description: item_id passed in request body as json.
+        content:
+          application/json:
+            schema:
+                type: integer
+                  
+            example:
+              item_id: 3
+        
+      responses:
+        '200':
+          description: Serves an item / product with all available data.
+          content:
+            application/json:
+              example:
+                item: Object<any>
+
+        '404':
+          description: Item not found.
+    post:
+      responses:
+        '200':
+          description: Inserts an item in the database. (Requires authentication)
+        '403':
+          description: Forbidden - Unauthenticated request to the endpoint.
+        '400':
+          description: Bad Request
+    patch:
+      responses:
+        '200':
+          description: Update an item in the database. (Requires authentication)
+        '403':
+          description: Forbidden - Unauthenticated request to the endpoint.
+        '400':
+          description: Bad Request
+        '404':
+          description: Item not found
+    
+  /items:
+    get:
+      responses:
+        '200':
+          description: Serves the list of items with summary description of each of them.
+
+  /order:
+    get:
+      responses:
+        '200':
+          description: Gets the specified order data and the user that initiated it. (Requires authentication)
+        '403':
+          description: Forbidden - Unauthenticated request to the endpoint.
+        '404':
+          description: Order not found.
+
+    post:
+      responses:
+        '200':
+          description: Created a new order. (Requires authentication)
+        '403':
+          description: Forbidden - Unauthenticated request to the endpoint.
+        '400':
+          description: Bad Request
+    patch:
+      responses:
+        '200':
+          description: Update an existing order. (Requires authentication)
+        '403':
+          description: Forbidden - Unauthenticated request to the endpoint.
+        '400':
+          description: Bad Request
+        '404':
+          description: Order not found.
+
+

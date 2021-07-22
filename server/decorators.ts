@@ -61,3 +61,9 @@ export function authenticate(): MethodDecorator {
         }
     }   
 }
+
+export function validate() {
+    return function(target: any, propertyKey: string) {
+        console.log(target, propertyKey);
+    }
+}

@@ -4,7 +4,7 @@ build:
 	docker build -t s .
 
 run: build
-	docker-compose up -d	
+	docker-compose up -d --force-recreate	
 
 down:
 	docker-compose down

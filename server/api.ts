@@ -1,7 +1,7 @@
 import express, {Request, Response, Router} from "express";
 import {config} from "./config";
 import {db} from "./main";
-import {authenticate, route, log} from "./decorators";
+import {route, log} from "./decorators";
 
 const cfg = new config();
 
