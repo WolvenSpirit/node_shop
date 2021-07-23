@@ -23,7 +23,7 @@ let routing = (
             <Route path="/list" component={List} />
             <Route path="/login" component={Login} />
             <Route path="/register" component={Register} />
-            <Route path="/item" component={Item} />
+            <Route path="/item/:id" component={Item} />
         </div>
     </Router>
 )

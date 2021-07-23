@@ -13,6 +13,7 @@ const config = {
     path: path.resolve(__dirname, "dist"),
   },
   devServer: {
+    contentBase: "./",
     open: true,
     host: "localhost",
     historyApiFallback: true,
