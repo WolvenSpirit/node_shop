@@ -79,6 +79,13 @@ paths:
         '200':
           description: Serves the list of items with summary description of each of them.
 
+  /orders:
+    get:
+      responses:
+        '200':
+          description: Serves the list of orders with summary description of each of them.
+
+
   /order:
     get:
       responses:
