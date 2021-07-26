@@ -20,39 +20,29 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.config = void 0;
-var fs = __importStar(require("fs"));
-var dotenv = __importStar(require("dotenv"));
+const fs = __importStar(require("fs"));
+const dotenv = __importStar(require("dotenv"));
+const main_1 = require("./main");
 dotenv.config();
-var config = /** @class */ (function () {
-    function config() {
-        var _this = this;
-        this.schema = "";
-        this.template = "";
-        this.appjs = "";
-        fs.readFile(process.env.DB_Q, 'utf8', function (err, data) {
-            if (err)
-                throw err;
-            if (data === undefined) {
-                console.log("schema read fail");
-                return;
-            }
-            _this.schema = data;
-        });
-        fs.readFile(process.env.ENTRYPOINT, 'utf8', function (err, data) {
-            if (data === undefined) {
-                console.log("entrypoint read fail");
-                return;
-            }
-            _this.template = data;
-        });
-        fs.readFile(process.env.JS_BUNDLE, 'utf8', function (err, data) {
-            if (data === undefined) {
-                console.log("js bundle read fail");
-                return;
-            }
-            _this.appjs = data;
-        });
+class config {
+    schema = {};
+    template = "";
+    appjs = "";
+    constructor() {
+        let data = fs.readFileSync(process.env.DB_Q, 'utf8');
+        this.schema = JSON.parse(data);
+        this.template = fs.readFileSync(process.env.ENTRYPOINT, 'utf8');
+        this.appjs = fs.readFileSync(process.env.JS_BUNDLE, 'utf8');
+        this.migrate(this.schema.migrate_up);
     }
-    return config;
-}());
+    migrate(obj) {
+        setTimeout(() => {
+            let keys = Object.keys(obj);
+            keys.forEach((v, i) => {
+                console.log(`Creating table ${v}`);
+                main_1.db.query(obj[v]);
+            });
+        }, 3000);
+    }
+}
 exports.config = config;

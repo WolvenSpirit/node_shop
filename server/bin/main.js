@@ -23,13 +23,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.db = void 0;
-var express_1 = __importDefault(require("express"));
-var dotenv = __importStar(require("dotenv"));
-var handlers_1 = require("./handlers");
-var mysql_1 = __importDefault(require("mysql"));
+const express_1 = __importDefault(require("express"));
+const dotenv = __importStar(require("dotenv"));
+const mysql_1 = __importDefault(require("mysql"));
+const api_1 = require("./api");
 dotenv.config();
-var app = express_1.default();
-var port = parseInt(process.env.PORT, 10);
+const app = express_1.default();
+const port = parseInt(process.env.PORT, 10);
 exports.db = mysql_1.default.createPool({
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT, 10),
@@ -38,20 +38,32 @@ exports.db = mysql_1.default.createPool({
     password: process.env.DB_PASSWORD
 });
 app.use(express_1.default.json());
-app.use(handlers_1.router);
-var server = app.listen(port, function () {
-    console.log("Listening on port " + port + "...");
+let _api = new api_1.api();
+app.get('/', _api.index);
+app.get('/items', _api.getItems);
+app.get('/orders', _api.getOrders);
+app.get('/main.js', _api.serveBundleJS);
+app.get('/item', _api.getItem);
+app.post('/item', _api.postItem);
+app.patch('/item', _api.patchItem);
+app.delete('/item', _api.deleteItem);
+app.get('/order', _api.getItem);
+app.post('/order', _api.postItem);
+app.patch('/order', _api.patchItem);
+app.delete('/order', _api.deleteItem);
+let server = app.listen(port, () => {
+    console.log(`Listening on port ${port}...`);
 });
 function shutdown() {
     console.log("Server closing");
     server.close();
     exports.db.end();
 }
-process.on('SIGINT', function () {
+process.on('SIGINT', () => {
     console.info('Sigint received');
     shutdown();
 });
-process.on('SIGTERM', function () {
+process.on('SIGTERM', () => {
     console.info('Sigterm received');
     shutdown();
 });

@@ -1,6 +1,6 @@
 import express, {Request, Response, Router} from "express";
 
-export const router = express.Router();
+export var router: Router = express.Router();
 
 /**
  * @route(path: string, method: string)
@@ -9,6 +9,7 @@ export const router = express.Router();
  */
 export function route(path: string, method: string): MethodDecorator {
     return function(target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
+        let original = descriptor;
         switch(method) {
             case "get":
                 router.get(path,function(req: Request, resp: Response) {
@@ -35,6 +36,7 @@ export function route(path: string, method: string): MethodDecorator {
                     descriptor.value(req,resp);
                 });
         }
+        return original;
     }
 }
 
@@ -47,6 +49,7 @@ export function log(): MethodDecorator {
             let t = new Date().toDateString();
             console.log(`${t} - Method:[${r.method}] Path:[${r.path}]`);
         }
+        return original;
     }   
 }
 

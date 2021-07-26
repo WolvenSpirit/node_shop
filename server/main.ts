@@ -1,8 +1,8 @@
-import express from "express";
+import express, {Request, Response} from "express";
 import * as dotenv from "dotenv";
-import {api} from "./api";
-import {router} from "./decorators";
 import mysql from "mysql";
+import {api} from "./api";
+import {config} from "./config";
 
 dotenv.config();
 
@@ -20,9 +20,22 @@ export const db: mysql.Pool = mysql.createPool({
 
 app.use(express.json());
 
-let apiInstance = new api();
+let _api: api = new api();
 
-app.use(router);
+app.get('/',_api.index);
+app.get('/items',_api.getItems);
+app.get('/orders',_api.getOrders);
+app.get('/main.js',_api.serveBundleJS);
+
+app.get('/item',_api.getItem);
+app.post('/item',_api.postItem);
+app.patch('/item',_api.patchItem);
+app.delete('/item',_api.deleteItem);
+
+app.get('/order',_api.getItem);
+app.post('/order',_api.postItem);
+app.patch('/order',_api.patchItem);
+app.delete('/order',_api.deleteItem);
 
 let server = app.listen(port, ()=> {
 

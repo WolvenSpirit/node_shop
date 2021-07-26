@@ -8,4 +8,6 @@ RUN npm i -g typescript
 
 RUN tsc
 
+COPY .env ./bin/.env
+
 ENTRYPOINT node ./bin/main.js

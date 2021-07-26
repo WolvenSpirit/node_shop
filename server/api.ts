@@ -6,11 +6,11 @@ import {route, log} from "./decorators";
 const cfg = new config();
 
 export class api {
-
-    constructor() {}
+    constructor() {
+            
+    }
 
     @log()
-    @route("/items","get")
     async getItems(r: Request, wr: Response) {
         db.getConnection((err,conn)=> {
             if(err) {
@@ -22,6 +22,7 @@ export class api {
             conn.query(cfg.schema?.queries?.select.all_items,(err,result,fields)=> {
                 if (err) {
                     console.log(err.message);
+                    conn.release();
                     wr.end();
                 }
                 console.log(result);
@@ -31,10 +32,10 @@ export class api {
             });
             conn.release();
         });
+        wr.end();
     }
 
     @log()
-    @route("/","get")
     async index(r: Request, wr: Response) {
         console.log(cfg.template);
         wr.write(`${cfg.template}`);
@@ -42,17 +43,88 @@ export class api {
     }
 
     @log()
-    @route("/app.js","get")
-    async serveBundleJS(r: Request, wr: Response) {
+    serveBundleJS(r: Request, wr: Response) {
         wr.setHeader("Content-Type","application/javascript");
         wr.write(cfg.appjs);
         wr.end();
     }
 
     @log()
-    @route("/item", "post")
-    async insertItem(r: Request, wr: Response) {
+    async postItem(r: Request, wr: Response) {
+        console.log(r.body);
+        db.getConnection((err,conn)=>{
+            let b = new Buffer(r.body);
+            conn.query(cfg.schema.queries.insert.item,b,(err,result,fields)=>{
+                if(err){
+                    console.log(err.message);
+                    conn.release();
+                    wr.end();
+                    return;
+                }
+                wr.write(result);
+                wr.end();
+            });
+        });
+    }
+    @log()
+    async getItem(r: Request, wr: Response) {
+        console.log(r.body);
+        db.getConnection((err,conn)=>{
+            if(err) {
+                console.log(err.message);
+                conn.release();
+                wr.end();
+                return;
+            }
+            conn.query(cfg.schema.queries.select.item,r.body.id,(err,result,fields)=>{
+                if(err) {
+                    console.log(err.message);
+                        return err;
+                    } 
+                    else {
+                    console.log(result)
+                    wr.setHeader("Content-Type","application/json");
+                    wr.write(JSON.stringify(result));
+                    wr.end();
+                }
+            });
+        });
+        
+    }
+    @log()
+    async patchItem(r: Request, wr: Response) {
         // TODO
+        wr.end();
+    }
+    @log()
+    async deleteItem(r: Request, wr: Response) {
+        // TODO
+        wr.end();
     }
 
+    @log()
+    async postOrder(r: Request, wr: Response) {
+        // TODO
+        wr.end();
+    }
+    @log()
+    async getOrder(r: Request, wr: Response) {
+        // TODO
+        wr.end();
+    }
+    @log()
+    async patchOrder(r: Request, wr: Response) {
+        // TODO
+        wr.end();
+    }
+    @log()
+    async deleteOrder(r: Request, wr: Response) {
+        // TODO
+        wr.end();
+    }
+    @log()
+    async getOrders(r: Request, wr: Response) {
+        // TODO
+        wr.end();
+    }
 }
