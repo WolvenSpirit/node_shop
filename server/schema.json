@@ -2,7 +2,7 @@
     "migrate_up":{
         "users":"create table users (id serial primary key, email varchar(255) unique, password varchar(255) unique, role integer, created timestamp default NOW())",
         "items":"create table items (id serial primary key, name varchar(255) unique, description varchar(255), price double, created timestamp default NOW())",
-        "orders":"create table orders (id serial primary key, user_id int, details text, total_price double, paid boolean, created timestamp default NOW())",
+        "orders":"create table orders (id serial primary key, user_id int, name varchar(255), details text, total_price double, paid boolean, created timestamp default NOW())",
         "images":"create table images (id serial primary key, item_id integer, url varchar(255))"
     },
     "migrate_down":{
@@ -18,16 +18,23 @@
             "order":"insert into orders SET ? "
         },
         "select":{
-            "user":"select id, username, password, created from users where ?? = ?",
-            "all_items":"select items.name, items.description, items.price, JSON_OBJECT('urls', images.url) as images from items left join images on items.id = images.item_id;",
-            "item":"select items.name, items.description, items.price, JSON_OBJECT('urls', images.url) as images from items left join images on items.id = images.item_id where items.id = ?" ,
-            "order":"select orders.id as order_id, orders.user_id, orders.details as order_details, orders.total_price, orders.created as order_created_at, users.email as user_email, users.created as user_created_at from orders join users on orders.user_id == users.id where orders.user_id = ?"           
+            "user":"select id, username, password, created from users where id = ?",
+            "item":"select items.id, items.name, items.description, items.price, JSON_OBJECT('urls', images.url) as images from items left join images on items.id = images.item_id where items.id = ?" ,
+            "all_orders":"select orders.id as order_id, orders.user_id, orders.name, orders.details as order_details, orders.total_price, orders.created as order_created_at, users.email as user_email, users.created as user_created_at from orders left join users on orders.user_id = users.id where orders.user_id = ?",
+            "all_users":"select id, username, password, created from users",
+            "all_items":"select items.id, items.name, items.description, items.price, JSON_OBJECT('urls', images.url) as images from items left join images on items.id = images.item_id;",
+            "order":"select orders.id as order_id, orders.user_id, orders.details as order_details, orders.total_price, orders.created as order_created_at, users.email as user_email, users.created as user_created_at from orders left join users on orders.user_id = users.id where orders.id = ?"           
         },
         "update":{
-            "order_paid":"update orders set paid = true where ?? = ? "
+            "order_paid":"update orders set paid = true where ? ",
+            "item":"update items SET ? WHERE ? ",
+            "user":"update users SET ? WHERE ? "
         },
         "delete":{
-            "item_id":"delete from items where ?? = ?"
+            "item":"delete from items where id = ?",
+            "order":"delete from orders where id = ?",
+            "user":"delete from users where id = ?",
+            "image":"delete from images where id = ?"
         }
     }
 }

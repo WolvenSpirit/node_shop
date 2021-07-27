@@ -40,7 +40,11 @@ class config {
             let keys = Object.keys(obj);
             keys.forEach((v, i) => {
                 console.log(`Creating table ${v}`);
-                main_1.db.query(obj[v]);
+                main_1.db.query(obj[v], (err, result, fields) => {
+                    if (err) {
+                        console.log(err.message);
+                    }
+                });
             });
         }, 3000);
     }

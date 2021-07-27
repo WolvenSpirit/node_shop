@@ -32,18 +32,27 @@ paths:
         '400':
           description: Bad Request 
 
-  /item:
+  /item/:id:
     get:
-      requestBody:
-        description: item_id passed in request body as json.
-        content:
-          application/json:
-            schema:
-                type: integer
-                  
-            example:
-              item_id: 3
-        
+      description: item_id passed as slug in the url.
+      responses:
+        '200':
+          description: The id must be passed as slug in the url, serves an item / product with all available data.
+          content:
+            application/json:
+              example:
+                body:    ' {
+        "name": "Samsung Galaxy S21 MAX",
+        "description": "Lorem Ipsum",
+        "price": 800,
+        "images": "{\"urls\": null}"
+    }'
+
+        '404':
+          description: Item not found.
+
+    delete:
+      description: id passed as parameter, 
       responses:
         '200':
           description: Serves an item / product with all available data.
@@ -54,7 +63,16 @@ paths:
 
         '404':
           description: Item not found.
+  /item:
     post:
+      requestBody:
+          description: item_id passed as parameter.
+          content:
+            application/json:
+              schema:
+                  type: object
+              example:
+                body: '{"name":"Samsung Galaxy S11","description":"Lorem Ipsum","price":750.00}'
       responses:
         '200':
           description: Inserts an item in the database. (Requires authentication)
@@ -66,6 +84,13 @@ paths:
       responses:
         '200':
           description: Update an item in the database. (Requires authentication)
+          content:
+            application/json:
+              schema:
+                  type: object
+              example:
+                body: '[{"name":"Samsung Galaxy S11"},{"id":3}]'
+        
         '403':
           description: Forbidden - Unauthenticated request to the endpoint.
         '400':

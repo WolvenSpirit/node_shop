@@ -25,12 +25,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.db = void 0;
 const express_1 = __importDefault(require("express"));
 const dotenv = __importStar(require("dotenv"));
-const mysql_1 = __importDefault(require("mysql"));
+const mysql2_1 = __importDefault(require("mysql2"));
 const api_1 = require("./api");
 dotenv.config();
 const app = express_1.default();
 const port = parseInt(process.env.PORT, 10);
-exports.db = mysql_1.default.createPool({
+exports.db = mysql2_1.default.createPool({
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT, 10),
     database: process.env.DB_NAME,
@@ -41,16 +41,16 @@ app.use(express_1.default.json());
 let _api = new api_1.api();
 app.get('/', _api.index);
 app.get('/items', _api.getItems);
-app.get('/orders', _api.getOrders);
+app.get('/orders/:id', _api.getOrders);
 app.get('/main.js', _api.serveBundleJS);
-app.get('/item', _api.getItem);
+app.get('/item/:id', _api.getItem);
 app.post('/item', _api.postItem);
 app.patch('/item', _api.patchItem);
-app.delete('/item', _api.deleteItem);
-app.get('/order', _api.getItem);
-app.post('/order', _api.postItem);
-app.patch('/order', _api.patchItem);
-app.delete('/order', _api.deleteItem);
+app.delete('/item/:id', _api.deleteItem);
+app.get('/order/:id', _api.getOrder);
+app.post('/order', _api.postOrder);
+app.patch('/order', _api.patchOrder);
+app.delete('/order/:id', _api.deleteOrder);
 let server = app.listen(port, () => {
     console.log(`Listening on port ${port}...`);
 });

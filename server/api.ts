@@ -2,8 +2,61 @@ import express, {Request, Response, Router} from "express";
 import {config} from "./config";
 import {db} from "./main";
 import {route, log} from "./decorators";
+import { QueryError } from "mysql2";
+import PoolConnection from "mysql2/typings/mysql/lib/PoolConnection";
 
 const cfg = new config();
+
+type dbPayload = Buffer | string | Uint8Array
+
+function handleError(err:Error, conn: PoolConnection, wr: Response) {
+    if(err) {
+        console.log(err.message);
+        conn.release();
+        wr.end();
+    }
+}
+
+function handleUrlParamReq(r: Request, wr: Response, queryType: string, resource: string) {
+    console.log(r.params);
+    let n = parseInt(r.params.id,10);
+    db.getConnection((err,conn)=>{
+        if(err) {
+            handleError(err,conn,wr)
+            return;
+        }
+        conn.query(cfg.schema.queries[queryType][resource],n,(err,result,fields)=>{
+            if (err) {
+                handleError(err,conn,wr)
+                return;
+            }
+            console.log(result);
+            wr.setHeader("Content-Type","application/json");
+            wr.write(JSON.stringify(result));
+            wr.end();
+        });
+    });
+}
+
+function handleSelectAll(r: Request, wr: Response, resource: string) {
+    db.getConnection((err,conn)=> {
+        if(err) {
+            handleError(err,conn,wr)
+            return;
+        }
+        conn.query(cfg.schema?.queries?.select[resource],(err,result,fields)=> {
+            if (err) {
+                handleError(err,conn,wr)
+                return;
+            }
+            console.log(result);
+            wr.setHeader("Content-Type","application/json");
+            wr.write(JSON.stringify(result));
+            conn.release();
+            wr.end();
+        });
+    });
+}
 
 export class api {
     constructor() {
@@ -12,27 +65,12 @@ export class api {
 
     @log()
     async getItems(r: Request, wr: Response) {
-        db.getConnection((err,conn)=> {
-            if(err) {
-                console.log(err.message);
-                conn.release();
-                wr.end();
-                return;
-            }
-            conn.query(cfg.schema?.queries?.select.all_items,(err,result,fields)=> {
-                if (err) {
-                    console.log(err.message);
-                    conn.release();
-                    wr.end();
-                }
-                console.log(result);
-                wr.setHeader("Content-Type","application/json");
-                wr.write(JSON.stringify(result));
-                wr.end();
-            });
-            conn.release();
-        });
-        wr.end();
+        handleSelectAll(r,wr,'all_items');
+    }
+
+    @log()
+    async getOrders(r: Request, wr: Response) {
+        handleUrlParamReq(r,wr,'select','all_orders');
     }
 
     @log()
@@ -50,81 +88,108 @@ export class api {
     }
 
     @log()
+    async getItem(r: Request, wr: Response) {
+        handleUrlParamReq(r,wr,'select','item');
+    }
+
+    @log()
+    async deleteItem(r: Request, wr: Response) {
+        handleUrlParamReq(r,wr,'delete','item');
+    }
+
+    @log()
+    async getOrder(r: Request, wr: Response) {
+        handleUrlParamReq(r,wr,'select','order');
+    }
+
+    @log()
+    async deleteOrder(r: Request, wr: Response) {
+        handleUrlParamReq(r,wr,'delete','order');
+    }
+
+    @log()
     async postItem(r: Request, wr: Response) {
-        console.log(r.body);
+        let q: string = cfg.schema.queries.insert.item
         db.getConnection((err,conn)=>{
-            let b = new Buffer(r.body);
-            conn.query(cfg.schema.queries.insert.item,b,(err,result,fields)=>{
+            conn.query(q ,r.body ,(err,result,fields)=>{
                 if(err){
-                    console.log(err.message);
-                    conn.release();
-                    wr.end();
+                    handleError(err,conn,wr)
                     return;
                 }
-                wr.write(result);
+                wr.write(JSON.stringify(result));
                 wr.end();
             });
         });
     }
+
     @log()
-    async getItem(r: Request, wr: Response) {
+    async patchItem(r: Request, wr: Response) {
         console.log(r.body);
         db.getConnection((err,conn)=>{
             if(err) {
-                console.log(err.message);
-                conn.release();
-                wr.end();
+                handleError(err,conn,wr)
                 return;
             }
-            conn.query(cfg.schema.queries.select.item,r.body.id,(err,result,fields)=>{
-                if(err) {
-                    console.log(err.message);
-                        return err;
-                    } 
-                    else {
-                    console.log(result)
-                    wr.setHeader("Content-Type","application/json");
-                    wr.write(JSON.stringify(result));
-                    wr.end();
+            conn.query(cfg.schema.queries.update.item,r.body,(err,result,fields)=>{
+                if (err) {
+                    handleError(err,conn,wr)
+                    return;
                 }
+                console.log(result);
+                wr.setHeader("Content-Type","application/json");
+                wr.write(JSON.stringify(result));
+                wr.end();
             });
         });
-        
-    }
-    @log()
-    async patchItem(r: Request, wr: Response) {
-        // TODO
-        wr.end();
-    }
-    @log()
-    async deleteItem(r: Request, wr: Response) {
-        // TODO
-        wr.end();
     }
 
     @log()
     async postOrder(r: Request, wr: Response) {
-        // TODO
-        wr.end();
+        console.log(r.body);
+        db.getConnection((err: Error, conn: PoolConnection)=>{
+            handleError(err,conn,wr);
+            conn.query(cfg.schema.queries.insert.order,r.body,(err,result,fields)=>{
+                if(err) {
+                    handleError(err,conn,wr);
+                    return;
+                }
+                console.log(result);
+                wr.setHeader("Content-Type","application/json");
+                wr.write(JSON.stringify(result));
+                wr.end();
+            });
+        })
     }
-    @log()
-    async getOrder(r: Request, wr: Response) {
-        // TODO
-        wr.end();
-    }
+
     @log()
     async patchOrder(r: Request, wr: Response) {
-        // TODO
-        wr.end();
+        console.log(r.body);
+        db.getConnection((err,conn)=>{
+            if(err) {
+                handleError(err,conn,wr)
+                return;
+            }
+            conn.query(cfg.schema.queries.patch.order_paid,r.body,(err,result,fields)=>{
+                if (err) {
+                    handleError(err,conn,wr)
+                    return;
+                }
+                console.log(result);
+                wr.setHeader("Content-Type","application/json");
+                wr.write(JSON.stringify(result));
+                wr.end();
+            });
+        });
     }
+
     @log()
-    async deleteOrder(r: Request, wr: Response) {
+    async login(r: Request, wr: Response) {
         // TODO
-        wr.end();
     }
+
     @log()
-    async getOrders(r: Request, wr: Response) {
+    async register(r: Request, wr: Response) {
         // TODO
-        wr.end();
     }
+
 }

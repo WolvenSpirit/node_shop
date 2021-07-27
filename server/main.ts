@@ -1,6 +1,6 @@
 import express, {Request, Response} from "express";
 import * as dotenv from "dotenv";
-import mysql from "mysql";
+import mysql from "mysql2";
 import {api} from "./api";
 import {config} from "./config";
 
@@ -24,18 +24,18 @@ let _api: api = new api();
 
 app.get('/',_api.index);
 app.get('/items',_api.getItems);
-app.get('/orders',_api.getOrders);
+app.get('/orders/:id',_api.getOrders);
 app.get('/main.js',_api.serveBundleJS);
 
-app.get('/item',_api.getItem);
+app.get('/item/:id',_api.getItem);
 app.post('/item',_api.postItem);
 app.patch('/item',_api.patchItem);
-app.delete('/item',_api.deleteItem);
+app.delete('/item/:id',_api.deleteItem);
 
-app.get('/order',_api.getItem);
-app.post('/order',_api.postItem);
-app.patch('/order',_api.patchItem);
-app.delete('/order',_api.deleteItem);
+app.get('/order/:id',_api.getOrder);
+app.post('/order',_api.postOrder);
+app.patch('/order',_api.patchOrder);
+app.delete('/order/:id',_api.deleteOrder);
 
 let server = app.listen(port, ()=> {
 
