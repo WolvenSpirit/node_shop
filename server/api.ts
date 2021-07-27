@@ -4,6 +4,8 @@ import {db} from "./main";
 import {route, log} from "./decorators";
 import { QueryError } from "mysql2";
 import PoolConnection from "mysql2/typings/mysql/lib/PoolConnection";
+import { compare, hash } from "./auth";
+import * as jwt from "jsonwebtoken";
 
 const cfg = new config();
 
@@ -58,6 +60,15 @@ function handleSelectAll(r: Request, wr: Response, resource: string) {
     });
 }
 
+function verify(r: Request, wr: Response): boolean {
+    if (jwt.verify(r.headers?.authorization?.split(' ')[1] as string,cfg.secret) === undefined) {
+        wr.writeHead(403,"Forbidden");
+        wr.end();
+        return false;
+    }
+    return true;
+}
+
 export class api {
     constructor() {
             
@@ -70,6 +81,9 @@ export class api {
 
     @log()
     async getOrders(r: Request, wr: Response) {
+        if(!verify(r,wr)) {
+            return;
+        }
         handleUrlParamReq(r,wr,'select','all_orders');
     }
 
@@ -93,23 +107,51 @@ export class api {
     }
 
     @log()
+    async getUser(r: Request, wr: Response) {
+        if(!verify(r,wr)) {
+            return;
+        }
+        handleUrlParamReq(r,wr,'select','user');
+    }
+
+    @log()
+    async getUsers(r: Request, wr: Response) {
+        if(!verify(r,wr)) {
+            return;
+        }
+        handleSelectAll(r,wr,'all_users');
+    }
+
+    @log()
     async deleteItem(r: Request, wr: Response) {
+        if(!verify(r,wr)) {
+            return;
+        }
         handleUrlParamReq(r,wr,'delete','item');
     }
 
     @log()
     async getOrder(r: Request, wr: Response) {
+        if(!verify(r,wr)) {
+            return;
+        }
         handleUrlParamReq(r,wr,'select','order');
     }
 
     @log()
     async deleteOrder(r: Request, wr: Response) {
+        if(!verify(r,wr)) {
+            return;
+        }
         handleUrlParamReq(r,wr,'delete','order');
     }
 
     @log()
     async postItem(r: Request, wr: Response) {
         let q: string = cfg.schema.queries.insert.item
+        if(!verify(r,wr)) {
+            return;
+        }
         db.getConnection((err,conn)=>{
             conn.query(q ,r.body ,(err,result,fields)=>{
                 if(err){
@@ -125,6 +167,9 @@ export class api {
     @log()
     async patchItem(r: Request, wr: Response) {
         console.log(r.body);
+        if(!verify(r,wr)) {
+            return;
+        }
         db.getConnection((err,conn)=>{
             if(err) {
                 handleError(err,conn,wr)
@@ -146,6 +191,9 @@ export class api {
     @log()
     async postOrder(r: Request, wr: Response) {
         console.log(r.body);
+        if(!verify(r,wr)) {
+            return;
+        }
         db.getConnection((err: Error, conn: PoolConnection)=>{
             handleError(err,conn,wr);
             conn.query(cfg.schema.queries.insert.order,r.body,(err,result,fields)=>{
@@ -164,6 +212,9 @@ export class api {
     @log()
     async patchOrder(r: Request, wr: Response) {
         console.log(r.body);
+        if(!verify(r,wr)) {
+            return;
+        }
         db.getConnection((err,conn)=>{
             if(err) {
                 handleError(err,conn,wr)
@@ -184,12 +235,47 @@ export class api {
 
     @log()
     async login(r: Request, wr: Response) {
-        // TODO
+        console.log(r.body);
+        db.getConnection((err,conn)=>{
+            if(err) {
+                handleError(err,conn,wr)
+                return;
+            }
+            conn.query(cfg.schema.queries.select.login,r.body.email,(err,result: any,fields)=>{
+                if (err) {
+                    handleError(err,conn,wr)
+                    return;
+                }
+                if (compare(r.body.password,result[0].password)) {
+                    let token = jwt.sign({id:result.id,email:result.email},cfg.secret);
+                    wr.setHeader("Content-Type","application/json");
+                    wr.write(JSON.stringify({Authorization: token}));
+                    wr.end();
+                } else {
+                    wr.writeHead(403,"Forbidden")
+                    wr.end()
+                }
+            });
+        });
     }
 
     @log()
     async register(r: Request, wr: Response) {
-        // TODO
+        console.log(r.body);
+        db.getConnection((err: Error, conn: PoolConnection)=>{
+            r.body.password = hash(r.body.password.trimLeft().trimRight());
+            handleError(err,conn,wr);
+            conn.query(cfg.schema.queries.insert.user,r.body,(err,result,fields)=>{
+                if(err) {
+                    handleError(err,conn,wr);
+                    return;
+                }
+                console.log(result);
+                wr.setHeader("Content-Type","application/json");
+                wr.write(JSON.stringify(result));
+                wr.end();
+            });
+        });
     }
 
 }

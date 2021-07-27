@@ -37,6 +37,12 @@ app.post('/order',_api.postOrder);
 app.patch('/order',_api.patchOrder);
 app.delete('/order/:id',_api.deleteOrder);
 
+app.post('/login',_api.login);
+app.post('/register',_api.register);
+
+app.get('/user/:id',_api.getUser);
+app.get('/users',_api.getUsers);
+
 let server = app.listen(port, ()=> {
 
     console.log(`Listening on port ${port}...`)
