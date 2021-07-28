@@ -1,4 +1,4 @@
-import express, {Request, Response, Router} from "express";
+import express, {NextFunction, Request, Response, Router} from "express";
 import {config} from "./config";
 import {db} from "./main";
 import {route, log} from "./decorators";
@@ -159,6 +159,7 @@ export class api {
                     return;
                 }
                 wr.write(JSON.stringify(result));
+                conn.release();
                 wr.end();
             });
         });
@@ -183,6 +184,7 @@ export class api {
                 console.log(result);
                 wr.setHeader("Content-Type","application/json");
                 wr.write(JSON.stringify(result));
+                conn.release();
                 wr.end();
             });
         });
@@ -204,6 +206,7 @@ export class api {
                 console.log(result);
                 wr.setHeader("Content-Type","application/json");
                 wr.write(JSON.stringify(result));
+                conn.release();
                 wr.end();
             });
         })
@@ -228,6 +231,7 @@ export class api {
                 console.log(result);
                 wr.setHeader("Content-Type","application/json");
                 wr.write(JSON.stringify(result));
+                conn.release();
                 wr.end();
             });
         });
@@ -255,6 +259,7 @@ export class api {
                     wr.writeHead(403,"Forbidden")
                     wr.end()
                 }
+                conn.release();
             });
         });
     }
@@ -273,9 +278,35 @@ export class api {
                 console.log(result);
                 wr.setHeader("Content-Type","application/json");
                 wr.write(JSON.stringify(result));
+                conn.release();
                 wr.end();
             });
         });
     }
 
+    @log()
+    async uploadImages(r: Request, wr: Response) {
+        console.log(r);
+        let values = {
+            item_id: r.body.item_id,
+            url: `/images/${r.file?.filename}`
+        }
+        db.getConnection((err,conn)=>{
+            if(err){
+                handleError(err,conn,wr);
+                return;
+            }
+            conn.query(cfg.schema.queries?.insert?.image,values,(err,result,fields)=>{
+                if(err){
+                    handleError(err,conn,wr);
+                    return;
+                }
+                console.log(result);
+                wr.setHeader("Content-Type","application/json");
+                wr.write(JSON.stringify(result));
+                conn.release();
+                wr.end();
+            });
+        });
+    }
 }

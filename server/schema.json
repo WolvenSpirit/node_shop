@@ -20,10 +20,10 @@
         "select":{
             "login":"select id, password, created from users where email = ?",
             "user":"select id, email, password, created from users where id = ?",
-            "item":"select items.id, items.name, items.description, items.price, JSON_OBJECT('urls', images.url) as images from items left join images on items.id = images.item_id where items.id = ?" ,
+            "item":"select items.id, items.name, items.description, items.price, JSON_OBJECTAGG('image',JSON_OBJECT('url', images.url)) as images from items left join images on items.id = images.item_id where items.id = ?" ,
             "all_orders":"select orders.id as order_id, orders.user_id, orders.name, orders.details as order_details, orders.total_price, orders.created as order_created_at, users.email as user_email, users.created as user_created_at from orders left join users on orders.user_id = users.id where orders.user_id = ?",
             "all_users":"select id, email, password, created from users",
-            "all_items":"select items.id, items.name, items.description, items.price, JSON_OBJECT('urls', images.url) as images from items left join images on items.id = images.item_id;",
+            "all_items":"select items.id, items.name, items.description, items.price, JSON_OBJECTAGG('image',JSON_OBJECT('url', images.url)) as images from items left join images on items.id = images.item_id;",
             "order":"select orders.id as order_id, orders.user_id, orders.details as order_details, orders.total_price, orders.created as order_created_at, users.email as user_email, users.created as user_created_at from orders left join users on orders.user_id = users.id where orders.id = ?"           
         },
         "update":{

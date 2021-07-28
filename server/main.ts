@@ -3,6 +3,19 @@ import * as dotenv from "dotenv";
 import mysql from "mysql2";
 import {api} from "./api";
 import {config} from "./config";
+import multer from "multer";
+import bodyParser from "body-parser";
+
+var storage = multer.diskStorage({
+    destination:'./images',
+    filename: function(r,fl,cb) {
+        r.file = fl;
+        const name = `${fl.fieldname}_${Date.now()}.${fl.mimetype.split('/')[1]}`;
+        cb(null,name);
+    }
+});
+
+var upload = multer({storage:storage});
 
 dotenv.config();
 
@@ -19,6 +32,10 @@ export const db: mysql.Pool = mysql.createPool({
 });
 
 app.use(express.json());
+
+app.use(bodyParser.urlencoded({extended:true,limit:10000000}));
+
+app.use('/images',express.static('images'));
 
 let _api: api = new api();
 
@@ -42,6 +59,8 @@ app.post('/register',_api.register);
 
 app.get('/user/:id',_api.getUser);
 app.get('/users',_api.getUsers);
+
+app.post('/images',upload.single('image'),_api.uploadImages);
 
 let server = app.listen(port, ()=> {
 

@@ -27,6 +27,17 @@ const express_1 = __importDefault(require("express"));
 const dotenv = __importStar(require("dotenv"));
 const mysql2_1 = __importDefault(require("mysql2"));
 const api_1 = require("./api");
+const multer_1 = __importDefault(require("multer"));
+const body_parser_1 = __importDefault(require("body-parser"));
+var storage = multer_1.default.diskStorage({
+    destination: './images',
+    filename: function (r, fl, cb) {
+        r.file = fl;
+        const name = `${fl.fieldname}_${Date.now()}.${fl.mimetype.split('/')[1]}`;
+        cb(null, name);
+    }
+});
+var upload = multer_1.default({ storage: storage });
 dotenv.config();
 const app = express_1.default();
 const port = parseInt(process.env.PORT, 10);
@@ -38,6 +49,8 @@ exports.db = mysql2_1.default.createPool({
     password: process.env.DB_PASSWORD
 });
 app.use(express_1.default.json());
+app.use(body_parser_1.default.urlencoded({ extended: true, limit: 10000000 }));
+app.use('/images', express_1.default.static('images'));
 let _api = new api_1.api();
 app.get('/', _api.index);
 app.get('/items', _api.getItems);
@@ -55,6 +68,7 @@ app.post('/login', _api.login);
 app.post('/register', _api.register);
 app.get('/user/:id', _api.getUser);
 app.get('/users', _api.getUsers);
+app.post('/images', upload.single('image'), _api.uploadImages);
 let server = app.listen(port, () => {
     console.log(`Listening on port ${port}...`);
 });

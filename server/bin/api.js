@@ -81,6 +81,14 @@ function handleSelectAll(r, wr, resource) {
         });
     });
 }
+function verify(r, wr) {
+    if (jwt.verify(r.headers?.authorization?.split(' ')[1], cfg.secret) === undefined) {
+        wr.writeHead(403, "Forbidden");
+        wr.end();
+        return false;
+    }
+    return true;
+}
 class api {
     constructor() {
     }
@@ -88,6 +96,9 @@ class api {
         handleSelectAll(r, wr, 'all_items');
     }
     async getOrders(r, wr) {
+        if (!verify(r, wr)) {
+            return;
+        }
         handleUrlParamReq(r, wr, 'select', 'all_orders');
     }
     async index(r, wr) {
@@ -104,22 +115,40 @@ class api {
         handleUrlParamReq(r, wr, 'select', 'item');
     }
     async getUser(r, wr) {
+        if (!verify(r, wr)) {
+            return;
+        }
         handleUrlParamReq(r, wr, 'select', 'user');
     }
     async getUsers(r, wr) {
+        if (!verify(r, wr)) {
+            return;
+        }
         handleSelectAll(r, wr, 'all_users');
     }
     async deleteItem(r, wr) {
+        if (!verify(r, wr)) {
+            return;
+        }
         handleUrlParamReq(r, wr, 'delete', 'item');
     }
     async getOrder(r, wr) {
+        if (!verify(r, wr)) {
+            return;
+        }
         handleUrlParamReq(r, wr, 'select', 'order');
     }
     async deleteOrder(r, wr) {
+        if (!verify(r, wr)) {
+            return;
+        }
         handleUrlParamReq(r, wr, 'delete', 'order');
     }
     async postItem(r, wr) {
         let q = cfg.schema.queries.insert.item;
+        if (!verify(r, wr)) {
+            return;
+        }
         main_1.db.getConnection((err, conn) => {
             conn.query(q, r.body, (err, result, fields) => {
                 if (err) {
@@ -127,12 +156,16 @@ class api {
                     return;
                 }
                 wr.write(JSON.stringify(result));
+                conn.release();
                 wr.end();
             });
         });
     }
     async patchItem(r, wr) {
         console.log(r.body);
+        if (!verify(r, wr)) {
+            return;
+        }
         main_1.db.getConnection((err, conn) => {
             if (err) {
                 handleError(err, conn, wr);
@@ -146,16 +179,14 @@ class api {
                 console.log(result);
                 wr.setHeader("Content-Type", "application/json");
                 wr.write(JSON.stringify(result));
+                conn.release();
                 wr.end();
             });
         });
     }
     async postOrder(r, wr) {
         console.log(r.body);
-        let authorize = r.headers?.authorization?.split(' ')[1];
-        if (jwt.verify(authorize, cfg.secret) === undefined) {
-            wr.writeHead(403, "Forbidden");
-            wr.end();
+        if (!verify(r, wr)) {
             return;
         }
         main_1.db.getConnection((err, conn) => {
@@ -168,18 +199,14 @@ class api {
                 console.log(result);
                 wr.setHeader("Content-Type", "application/json");
                 wr.write(JSON.stringify(result));
+                conn.release();
                 wr.end();
             });
         });
     }
     async patchOrder(r, wr) {
         console.log(r.body);
-        console.log(r.headers);
-        wr.end();
-        return;
-        if (jwt.verify(r.headers.authorization, cfg.secret) === undefined) {
-            wr.writeHead(403, "Forbidden");
-            wr.end();
+        if (!verify(r, wr)) {
             return;
         }
         main_1.db.getConnection((err, conn) => {
@@ -195,6 +222,7 @@ class api {
                 console.log(result);
                 wr.setHeader("Content-Type", "application/json");
                 wr.write(JSON.stringify(result));
+                conn.release();
                 wr.end();
             });
         });
@@ -221,6 +249,7 @@ class api {
                     wr.writeHead(403, "Forbidden");
                     wr.end();
                 }
+                conn.release();
             });
         });
     }
@@ -237,6 +266,31 @@ class api {
                 console.log(result);
                 wr.setHeader("Content-Type", "application/json");
                 wr.write(JSON.stringify(result));
+                conn.release();
+                wr.end();
+            });
+        });
+    }
+    async uploadImages(r, wr) {
+        console.log(r);
+        let values = {
+            item_id: r.body.item_id,
+            url: `/images/${r.file?.filename}`
+        };
+        main_1.db.getConnection((err, conn) => {
+            if (err) {
+                handleError(err, conn, wr);
+                return;
+            }
+            conn.query(cfg.schema.queries?.insert?.image, values, (err, result, fields) => {
+                if (err) {
+                    handleError(err, conn, wr);
+                    return;
+                }
+                console.log(result);
+                wr.setHeader("Content-Type", "application/json");
+                wr.write(JSON.stringify(result));
+                conn.release();
                 wr.end();
             });
         });
@@ -338,4 +392,10 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], api.prototype, "register", null);
+__decorate([
+    decorators_1.log(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], api.prototype, "uploadImages", null);
 exports.api = api;
