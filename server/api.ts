@@ -242,15 +242,19 @@ export class api {
         console.log(r.body);
         db.getConnection((err,conn)=>{
             if(err) {
-                handleError(err,conn,wr)
+                console.log(err);
+                wr.writeHead(500,'Internal server error');
+                wr.end();
                 return;
             }
             conn.query(cfg.schema.queries.select.login,r.body.email,(err,result: any,fields)=>{
                 if (err) {
-                    handleError(err,conn,wr)
+                    console.log(err);
+                    wr.writeHead(403,'Forbidden');
+                    wr.end();
                     return;
                 }
-                if (compare(r.body.password,result[0].password)) {
+                if (result[0].password !== undefined && compare(r.body.password,result[0].password)) {
                     let token = jwt.sign({id:result.id,email:result.email},cfg.secret);
                     wr.setHeader("Content-Type","application/json");
                     wr.write(JSON.stringify({Authorization: token}));
@@ -269,10 +273,14 @@ export class api {
         console.log(r.body);
         db.getConnection((err: Error, conn: PoolConnection)=>{
             r.body.password = hash(r.body.password.trimLeft().trimRight());
-            handleError(err,conn,wr);
-            conn.query(cfg.schema.queries.insert.user,r.body,(err,result,fields)=>{
+            console.log(err);
+            wr.writeHead(500,'Internal server error');
+            wr.end();
+            conn.query(cfg.schema.queries.insert.user,{email:r.body.email,password:r.body.password,role:0},(err,result,fields)=>{
                 if(err) {
-                    handleError(err,conn,wr);
+                    console.log(err);
+                    wr.writeHead(403,'Forbidden');
+                    wr.end();
                     return;
                 }
                 console.log(result);
@@ -286,6 +294,9 @@ export class api {
 
     @log()
     async uploadImages(r: Request, wr: Response) {
+        if(!verify(r,wr)) {
+            return;
+        }
         console.log(r);
         let values = {
             item_id: r.body.item_id,

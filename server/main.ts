@@ -5,6 +5,7 @@ import {api} from "./api";
 import {config} from "./config";
 import multer from "multer";
 import bodyParser from "body-parser";
+import cors from "cors";
 
 var storage = multer.diskStorage({
     destination:'./images',
@@ -20,6 +21,8 @@ var upload = multer({storage:storage});
 dotenv.config();
 
 const app = express();
+
+app.use(cors());
 
 const port = parseInt(process.env.PORT as string,10);
 

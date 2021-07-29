@@ -1,19 +1,20 @@
-# 🚀 React-Shop
+# Node-Shop-Front
 
-This project was created without using any React third-party boilerplate, starter-kits and does NOT use Babel.
+## Available Scripts
 
----------------------------------------------------------------------
+### `npm start`
 
-Run:
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-```
-npm run build
-```
+The page will reload if you make edits.\
+You will also see any lint errors in the console.
 
-or
+### `npm test`
 
-```
-yarn build
-```
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-to bundle your application
+### `npm run build`
+
+Builds the app for production to the `build` folder.\

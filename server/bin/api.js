@@ -231,15 +231,19 @@ class api {
         console.log(r.body);
         main_1.db.getConnection((err, conn) => {
             if (err) {
-                handleError(err, conn, wr);
+                console.log(err);
+                wr.writeHead(500, 'Internal server error');
+                wr.end();
                 return;
             }
             conn.query(cfg.schema.queries.select.login, r.body.email, (err, result, fields) => {
                 if (err) {
-                    handleError(err, conn, wr);
+                    console.log(err);
+                    wr.writeHead(403, 'Forbidden');
+                    wr.end();
                     return;
                 }
-                if (auth_1.compare(r.body.password, result[0].password)) {
+                if (result[0].password !== undefined && auth_1.compare(r.body.password, result[0].password)) {
                     let token = jwt.sign({ id: result.id, email: result.email }, cfg.secret);
                     wr.setHeader("Content-Type", "application/json");
                     wr.write(JSON.stringify({ Authorization: token }));
@@ -257,10 +261,14 @@ class api {
         console.log(r.body);
         main_1.db.getConnection((err, conn) => {
             r.body.password = auth_1.hash(r.body.password.trimLeft().trimRight());
-            handleError(err, conn, wr);
-            conn.query(cfg.schema.queries.insert.user, r.body, (err, result, fields) => {
+            console.log(err);
+            wr.writeHead(500, 'Internal server error');
+            wr.end();
+            conn.query(cfg.schema.queries.insert.user, { email: r.body.email, password: r.body.password, role: 0 }, (err, result, fields) => {
                 if (err) {
-                    handleError(err, conn, wr);
+                    console.log(err);
+                    wr.writeHead(403, 'Forbidden');
+                    wr.end();
                     return;
                 }
                 console.log(result);
@@ -272,6 +280,9 @@ class api {
         });
     }
     async uploadImages(r, wr) {
+        if (!verify(r, wr)) {
+            return;
+        }
         console.log(r);
         let values = {
             item_id: r.body.item_id,

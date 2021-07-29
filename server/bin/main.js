@@ -29,6 +29,7 @@ const mysql2_1 = __importDefault(require("mysql2"));
 const api_1 = require("./api");
 const multer_1 = __importDefault(require("multer"));
 const body_parser_1 = __importDefault(require("body-parser"));
+const cors_1 = __importDefault(require("cors"));
 var storage = multer_1.default.diskStorage({
     destination: './images',
     filename: function (r, fl, cb) {
@@ -40,6 +41,7 @@ var storage = multer_1.default.diskStorage({
 var upload = multer_1.default({ storage: storage });
 dotenv.config();
 const app = express_1.default();
+app.use(cors_1.default());
 const port = parseInt(process.env.PORT, 10);
 exports.db = mysql2_1.default.createPool({
     host: process.env.DB_HOST,

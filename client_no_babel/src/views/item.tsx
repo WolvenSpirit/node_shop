@@ -1,7 +1,7 @@
 import React from 'react';
-import { RouteComponentProps, useParams, withRouter } from 'react-router-dom';
+import { useParams, withRouter } from 'react-router-dom';
 
-class Item extends React.Component<RouteComponentProps> {
+class Item extends React.Component {
 
     public id;
 

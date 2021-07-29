@@ -1,9 +1,5 @@
 import * as React from 'react';
 import { TextField, Grid, Card, CardHeader, CardContent, CardActionArea, CardActions, Typography, IconButton, Button } from '../../node_modules/@material-ui/core/index';
-import { HttpClient } from '../api.service';
-import Alert from '@material-ui/lab/Alert';
-import Collapse from '@material-ui/core/Collapse';
-import CloseIcon from '@material-ui/icons/Close';
 
 class Login extends React.Component<any, any> {
 
@@ -11,31 +7,13 @@ class Login extends React.Component<any, any> {
         super(props);
         this.state = {
             email: "",
-            password: "",
-            error: false
+            password: ""
         }
         this.login = this.login.bind(this);
-        this.handleChange = this.handleChange.bind(this);
     }
 
-    handleChange(e:any){
-        this.setState({[e?.target?.name]:e.target.value});
-    }
-
-    private emailMatch: RegExp = /(.*)\@(.*)\./g;
     login() {
-        let client = new HttpClient('http://localhost:9003');
         console.log(this.state);
-        if(this.state.password !== "" && this.state.email.match(this.emailMatch)) {
-            client.login({email:this.state.email,password:this.state.password}).then((result:any)=>{
-                console.log(result);
-                sessionStorage.setItem('Authorization',result.data.Authorization);
-            },(err)=>{
-                this.setState({error:true});
-            });
-        } else {
-            this.setState({error:true});
-        }
     }
     
     render() {
@@ -56,23 +34,14 @@ class Login extends React.Component<any, any> {
                     </Grid>
                     <hr />
                     <br />
-                    <form>
                     <Grid item xs={12}>
-                        <TextField type="email" name="email" label="Email" value={this.state.email} onChange={this.handleChange} />
+                        <TextField label="Email" value={this.state.email} InputLabelProps={{shrink:true}} />
                     </Grid>
                     <br />
                     <Grid item xs={12}>
-                        <TextField type="password" name="password" label="Password" value={this.state.password} onChange={this.handleChange} />
+                        <TextField label="Password" value={this.state.password} InputLabelProps={{shrink:true}}/>
                     </Grid>
-                    </form>
                 </CardContent>
-                <Collapse in={this.state.error}>
-                        <Alert severity="error" action={
-                                        <IconButton aria-label="close" color="inherit" size="small"
-                                        onClick={() => {this.setState({error: false});}}>
-                                        <CloseIcon fontSize="inherit" /></IconButton>
-                        }>Invalid credentials provided.</Alert>
-                </Collapse>
                 <Grid item xs={12}
                                 container
                                 direction="column"
