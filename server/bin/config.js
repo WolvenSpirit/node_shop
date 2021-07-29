@@ -27,13 +27,13 @@ dotenv.config();
 class config {
     schema = {};
     template = "";
-    appjs = "";
+    // public appjs: string = "";
     secret = "";
     constructor() {
         let data = fs.readFileSync(process.env.DB_Q, 'utf8');
         this.schema = JSON.parse(data);
         this.template = fs.readFileSync(process.env.ENTRYPOINT, 'utf8');
-        this.appjs = fs.readFileSync(process.env.JS_BUNDLE, 'utf8');
+        // this.appjs = fs.readFileSync(process.env.JS_BUNDLE as string,'utf8');
         this.secret = process.env.SECRET;
         this.migrate(this.schema.migrate_up);
     }

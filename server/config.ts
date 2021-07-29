@@ -7,14 +7,14 @@ dotenv.config();
 export class config {
     public schema: any = {};
     public template: string = "";
-    public appjs: string = "";
+    // public appjs: string = "";
     public secret: string = "";
 
     constructor() {
         let data = fs.readFileSync(process.env.DB_Q as string,'utf8',);
         this.schema = JSON.parse(data);
         this.template = fs.readFileSync(process.env.ENTRYPOINT as string,'utf8');
-        this.appjs = fs.readFileSync(process.env.JS_BUNDLE as string,'utf8');
+        // this.appjs = fs.readFileSync(process.env.JS_BUNDLE as string,'utf8');
         this.secret = process.env.SECRET as string;
         this.migrate(this.schema.migrate_up);
     }

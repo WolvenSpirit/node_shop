@@ -6,6 +6,7 @@ import {config} from "./config";
 import multer from "multer";
 import bodyParser from "body-parser";
 import cors from "cors";
+import path from "path";
 
 var storage = multer.diskStorage({
     destination:'./images',
@@ -38,14 +39,16 @@ app.use(express.json());
 
 app.use(bodyParser.urlencoded({extended:true,limit:10000000}));
 
-app.use('/images',express.static('images'));
+app.use('/images',express.static('bin/images'));
+app.use('/static/js',express.static('bin/client_dist/static/js'));
+app.use('/static/css',express.static('bin/client_dist/static/css'));
 
 let _api: api = new api();
 
 app.get('/',_api.index);
 app.get('/items',_api.getItems);
 app.get('/orders/:id',_api.getOrders);
-app.get('/main.js',_api.serveBundleJS);
+// app.get('/main.js',_api.serveBundleJS);
 
 app.get('/item/:id',_api.getItem);
 app.post('/item',_api.postItem);

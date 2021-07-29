@@ -1,6 +1,6 @@
 build:
 	cd ../client; npm run build:dev; echo "Frontend app build done."
-	cd .. ; cp -r client/dist server/bin/client_dist
+	cd .. ; cp -r client/build server/bin/client_dist
 	docker build -t s .
 
 run: build

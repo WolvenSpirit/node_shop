@@ -52,12 +52,14 @@ exports.db = mysql2_1.default.createPool({
 });
 app.use(express_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: true, limit: 10000000 }));
-app.use('/images', express_1.default.static('images'));
+app.use('/images', express_1.default.static('bin/images'));
+app.use('/static/js', express_1.default.static('bin/client_dist/static/js'));
+app.use('/static/css', express_1.default.static('bin/client_dist/static/css'));
 let _api = new api_1.api();
 app.get('/', _api.index);
 app.get('/items', _api.getItems);
 app.get('/orders/:id', _api.getOrders);
-app.get('/main.js', _api.serveBundleJS);
+// app.get('/main.js',_api.serveBundleJS);
 app.get('/item/:id', _api.getItem);
 app.post('/item', _api.postItem);
 app.patch('/item', _api.patchItem);

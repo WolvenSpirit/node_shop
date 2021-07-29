@@ -94,12 +94,14 @@ export class api {
         wr.end();
     }
 
+    /*
     @log()
     serveBundleJS(r: Request, wr: Response) {
         wr.setHeader("Content-Type","application/javascript");
         wr.write(cfg.appjs);
         wr.end();
     }
+    */
 
     @log()
     async getItem(r: Request, wr: Response) {
@@ -273,9 +275,12 @@ export class api {
         console.log(r.body);
         db.getConnection((err: Error, conn: PoolConnection)=>{
             r.body.password = hash(r.body.password.trimLeft().trimRight());
-            console.log(err);
-            wr.writeHead(500,'Internal server error');
-            wr.end();
+            if(err) {
+                console.log(err);
+                wr.writeHead(500,'Internal server error');
+                wr.end();
+                return;
+            }
             conn.query(cfg.schema.queries.insert.user,{email:r.body.email,password:r.body.password,role:0},(err,result,fields)=>{
                 if(err) {
                     console.log(err);

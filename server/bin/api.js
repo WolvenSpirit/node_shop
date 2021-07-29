@@ -106,11 +106,14 @@ class api {
         wr.write(`${cfg.template}`);
         wr.end();
     }
-    serveBundleJS(r, wr) {
-        wr.setHeader("Content-Type", "application/javascript");
+    /*
+    @log()
+    serveBundleJS(r: Request, wr: Response) {
+        wr.setHeader("Content-Type","application/javascript");
         wr.write(cfg.appjs);
         wr.end();
     }
+    */
     async getItem(r, wr) {
         handleUrlParamReq(r, wr, 'select', 'item');
     }
@@ -261,9 +264,12 @@ class api {
         console.log(r.body);
         main_1.db.getConnection((err, conn) => {
             r.body.password = auth_1.hash(r.body.password.trimLeft().trimRight());
-            console.log(err);
-            wr.writeHead(500, 'Internal server error');
-            wr.end();
+            if (err) {
+                console.log(err);
+                wr.writeHead(500, 'Internal server error');
+                wr.end();
+                return;
+            }
             conn.query(cfg.schema.queries.insert.user, { email: r.body.email, password: r.body.password, role: 0 }, (err, result, fields) => {
                 if (err) {
                     console.log(err);
@@ -325,12 +331,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], api.prototype, "index", null);
-__decorate([
-    decorators_1.log(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
-], api.prototype, "serveBundleJS", null);
 __decorate([
     decorators_1.log(),
     __metadata("design:type", Function),
