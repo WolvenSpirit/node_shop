@@ -1,12 +1,13 @@
 import axios from "axios";
+import { baseURL } from "./config";
 
 export class HttpClient {
 
     private apiPaths = {
-        item:       "/item/:id",
+        item:       "/item",
         login:      "/login",
         register:   "/register",
-        order:      "/order/:id",
+        order:      "/order",
         items:      "/items",
         orders:     "/orders"
     }
@@ -16,9 +17,12 @@ export class HttpClient {
         ContentType: 'application/json'
     }
 
-    public baseURL: string;
-    constructor(baseURL: string) {
+    public baseURL: string = "";
+    constructor(url?: string) {
         this.baseURL = baseURL;
+        if(url) {
+            this.baseURL = url as string;
+        }
     }
 
     async login(data: any): Promise<any> { 
@@ -37,8 +41,8 @@ export class HttpClient {
     async patchItem(data: string): Promise<any> { 
         return axios.patch(`${this.baseURL}${this.apiPaths.item}`, data, {headers:this.headers})
     }
-    async getItem(data: string): Promise<any> { 
-        return axios.get(`${this.baseURL}${this.apiPaths.item}`, {headers:this.headers})
+    async getItem(id: string): Promise<any> { 
+        return axios.get(`${this.baseURL}${this.apiPaths.item}/${id}`, {headers:this.headers})
     }
     async getItems(): Promise<any> {
         return axios.get(`${this.baseURL}${this.apiPaths.items}`,{headers:this.headers})

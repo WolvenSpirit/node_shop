@@ -58,6 +58,7 @@ function handleUrlParamReq(r, wr, queryType, resource) {
             console.log(result);
             wr.setHeader("Content-Type", "application/json");
             wr.write(JSON.stringify(result));
+            conn.release();
             wr.end();
         });
     });

@@ -9,7 +9,7 @@ import cors from "cors";
 import path from "path";
 
 var storage = multer.diskStorage({
-    destination:'./images',
+    destination:'./bin/images',
     filename: function(r,fl,cb) {
         r.file = fl;
         const name = `${fl.fieldname}_${Date.now()}.${fl.mimetype.split('/')[1]}`;

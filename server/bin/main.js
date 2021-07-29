@@ -31,7 +31,7 @@ const multer_1 = __importDefault(require("multer"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
 var storage = multer_1.default.diskStorage({
-    destination: './images',
+    destination: './bin/images',
     filename: function (r, fl, cb) {
         r.file = fl;
         const name = `${fl.fieldname}_${Date.now()}.${fl.mimetype.split('/')[1]}`;

@@ -6,6 +6,7 @@ import Login from "./views/login";
 import Register from "./views/register";
 import Item from "./views/item";
 import Nav from "./partials/nav";
+import Catalog from "./views/catalog";
 
 class App extends React.Component {
 
@@ -19,7 +20,7 @@ let routing = (
     <Router>
         <div>
             <Nav />
-            <Route exact path="/" component={App} />
+            <Route exact path="/" component={Catalog} />
             <Route path="/list" component={List} />
             <Route path="/login" component={Login} />
             <Route path="/register" component={Register} />
