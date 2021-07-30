@@ -1,5 +1,5 @@
 build:
-	cd ../client; npm run build:dev; echo "Frontend app build done."
+	cd ../client; npm run build; echo "Frontend app build done."
 	cd .. ; cp -r client/build server/bin/client_dist
 	docker build -t s .
 

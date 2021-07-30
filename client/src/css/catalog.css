@@ -1,0 +1,21 @@
+#paper__custom{
+    padding: 2em;
+    margin: 1em;
+    height:6em;
+}
+#name{
+    font-family: 'Roboto', sans-serif;
+    color:black;
+    font-size: .9em
+}
+#price{
+    font-family: 'Roboto', sans-serif;
+    color:red;
+    font-size: 1.5em;
+}
+#dollar{
+    font-size: .7em;
+}
+#paper{
+    max-width: 15em;
+}
