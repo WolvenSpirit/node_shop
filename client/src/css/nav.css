@@ -2,3 +2,8 @@ nav{
     padding: 1em;
     font-family: 'Roboto', sans-serif;
 }
+#nav{
+    position: fixed;
+    top: 0;
+    width: 100%;
+}

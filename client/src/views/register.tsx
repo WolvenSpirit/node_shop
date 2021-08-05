@@ -68,15 +68,15 @@ class Register extends React.Component<any, any> {
                     <br />
                     <form>
                     <Grid item xs={12}>
-                        <TextField type="email" name="email" label="Email" value={this.state.email} onChange={this.handleChange} />
+                        <TextField fullWidth={true} type="email" name="email" label="Email" value={this.state.email} onChange={this.handleChange} />
                     </Grid>
                     <br />
                     <Grid item xs={12}>
-                        <TextField type="password" name="password1" label="Password" value={this.state.password1} onChange={this.handleChange} />
+                        <TextField fullWidth={true} type="password" name="password1" label="Password" value={this.state.password1} onChange={this.handleChange} />
                     </Grid>
                     <br />
                     <Grid item xs={12}>
-                        <TextField type="password" name="password2" label="Re-type Password" value={this.state.password2} onChange={this.handleChange} />
+                        <TextField fullWidth={true} type="password" name="password2" label="Re-type Password" value={this.state.password2} onChange={this.handleChange} />
                     </Grid>
                     </form>
                 </CardContent>

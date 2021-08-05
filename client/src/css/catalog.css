@@ -1,7 +1,8 @@
 #paper__custom{
     padding: 2em;
+    padding-top: .5em;
     margin: 1em;
-    height:6em;
+    max-height:9em;
 }
 #name{
     font-family: 'Roboto', sans-serif;
@@ -19,7 +20,12 @@
 #paper{
     max-width: 15em;
 }
+#button{
+    background-color: rgba(4, 0, 255, 0.493);
+    color: white;
+    font-size: .5em;
+}
 #button:hover{
     box-shadow: rgba(0, 0, 0, 0.158) 1px 1px 15px 3px;
-    background-color:rgba(255, 0, 0, 0.137);
+    background-color:rgba(4, 0, 255, 0.678);
 }

@@ -5,7 +5,7 @@ import { Typography } from '../../node_modules/@material-ui/core/index';
 import { List } from '../../node_modules/@material-ui/core/index';
 import { ListItem } from '../../node_modules/@material-ui/core/index';
 import { ListItemText } from '../../node_modules/@material-ui/core/index';
-import { Button } from '../../node_modules/@material-ui/core/index';
+import { Button, ButtonGroup } from '../../node_modules/@material-ui/core/index';
 import { Link } from 'react-router-dom';
 import { Home, AccountCircle, HowToReg } from '../../node_modules/@material-ui/icons/index';
 import "../css/nav.css";
@@ -17,7 +17,12 @@ class Nav extends React.Component {
         return <div>
             <AppBar color="primary" position="sticky">
             <Toolbar>
+            </Toolbar>
+            </AppBar>
+            <AppBar color="primary" id='nav' position="sticky">
+            <Toolbar>
                 <Typography style={{color: "white"}}>React-Shop</Typography>&nbsp;&nbsp;&nbsp;
+                <ButtonGroup variant="text" color="primary" aria-label="text primary button group">
                 <Button  variant="outlined">
                 <Home style={{fill: "white"}} />
                     <Link to="/">
@@ -36,6 +41,7 @@ class Nav extends React.Component {
                     <Typography style={{color: "white"}}>Register</Typography>
                     </Link>
                 </Button>
+                </ButtonGroup>
             </Toolbar>
             </AppBar>
             </div>

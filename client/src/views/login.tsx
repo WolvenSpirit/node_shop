@@ -30,6 +30,7 @@ class Login extends React.Component<any, any> {
             client.login({email:this.state.email,password:this.state.password}).then((result:any)=>{
                 console.log(result);
                 sessionStorage.setItem('Authorization',result.data.Authorization);
+                this.props.history.push('/');
             },(err)=>{
                 this.setState({error:true});
             });
@@ -58,11 +59,11 @@ class Login extends React.Component<any, any> {
                     <br />
                     <form>
                     <Grid item xs={12}>
-                        <TextField type="email" name="email" label="Email" value={this.state.email} onChange={this.handleChange} />
+                        <TextField  fullWidth={true} type="email" name="email" label="Email" value={this.state.email} onChange={this.handleChange} />
                     </Grid>
                     <br />
                     <Grid item xs={12}>
-                        <TextField type="password" name="password" label="Password" value={this.state.password} onChange={this.handleChange} />
+                        <TextField  fullWidth={true} type="password" name="password" label="Password" value={this.state.password} onChange={this.handleChange} />
                     </Grid>
                     </form>
                 </CardContent>

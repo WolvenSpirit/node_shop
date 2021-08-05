@@ -11,6 +11,8 @@ import Dialog from '@material-ui/core/Dialog';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 import CloseIcon from '@material-ui/icons/Close';
+import DetailsIcon from '@material-ui/icons/Details';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 class Catalog extends React.Component<any, any, any> {
 
@@ -38,8 +40,9 @@ class Catalog extends React.Component<any, any, any> {
                         return item.images=JSON.stringify(["https://www.nicomatic.com/themes/custom/jango_sub/img/no-image.png"]);
                     } else {
                         let img = JSON.parse(item.images);
-                        img.map((v:string)=>{return v=`${baseURL}${v}`});
-                        return item.images = JSON.stringify(img);
+                        let m = img.map((v:string)=>{
+                            return v=`${baseURL}${v}`});
+                        return item.images = JSON.stringify(m);
                     }
                 });
                 console.log('loaded',data);
@@ -86,23 +89,29 @@ class Catalog extends React.Component<any, any, any> {
                     </Dialog>
                     {this.state.list.map((item:any,k:number)=>{
                         return  <Grid item xs={8} sm={4}>
-                        <Paper id="paper">
+                        <Card id="paper">
                             <div id="paper__custom">
                             {JSON.parse(item.images).map((im:string,i:any)=>{
                                 if(i===0){
-                                    return <img height="100" width="150" src={`${im}`} id={i}></img>
+                                    return <img height="100" width="150" src={im} id={i}></img>
                                 }
                             })}
-                            <Typography id="name">{item.name}</Typography>
-                            </div>
+                            <h5 id="name">{item.name} <div id="price"><small id="dollar">$</small> {item.price}</div></h5>
+                            </div><br />
+                            <CardActionArea>
                             <Grid container
                             direction="row"
                             justifyContent="center"
-                            spacing={4}>
-                            <Typography component="h3" id="price"><small id="dollar">$</small> {item.price}</Typography>
-                            &nbsp;&nbsp;&nbsp;<Button onClick={this.addToCart} id="button" variant="outlined"><AddShoppingCartIcon></AddShoppingCartIcon> Add to cart</Button>
-                            </Grid>
-                        </Paper>
+                            spacing={1}>
+                            
+                            <ButtonGroup variant="contained" color="primary" aria-label="contained primary button group">
+                            <Button size='small' onClick={this.addToCart} id="button" variant="outlined"><AddShoppingCartIcon></AddShoppingCartIcon> Add to cart</Button>
+                            <Button size='small' onClick={()=>{this.props.history.push(`/item/${item.id}`)}} id="button" variant="outlined"><DetailsIcon></DetailsIcon> Details</Button>
+                            <Button size='small' onClick={()=>{this.props.history.push(`/add/item/${item.id}`)}} id="button" variant="outlined"><MoreVertIcon></MoreVertIcon></Button>
+                            </ButtonGroup>
+                        </Grid>
+                        </CardActionArea>
+                        </Card>
                       </Grid>
                     })}
                 </Grid>

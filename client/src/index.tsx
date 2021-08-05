@@ -7,6 +7,7 @@ import Register from "./views/register";
 import Item from "./views/item";
 import Nav from "./partials/nav";
 import Catalog from "./views/catalog";
+import Additem from "./views/additem";
 
 class App extends React.Component {
 
@@ -25,6 +26,8 @@ let routing = (
             <Route path="/login" component={Login} />
             <Route path="/register" component={Register} />
             <Route path="/item/:id" component={Item} />
+            <Route exact path='/add/item' component={Additem} />
+            <Route path='/add/item/:id' component={Additem} />
         </div>
     </Router>
 )

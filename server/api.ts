@@ -257,7 +257,7 @@ export class api {
                     wr.end();
                     return;
                 }
-                if (result[0].password !== undefined && compare(r.body.password,result[0].password)) {
+                if (result[0].password !== undefined && compare(r.body?.password,result[0].password)) {
                     let token = jwt.sign({id:result.id,email:result.email},cfg.secret);
                     wr.setHeader("Content-Type","application/json");
                     wr.write(JSON.stringify({Authorization: token}));
@@ -320,7 +320,7 @@ export class api {
                 }
                 console.log(result);
                 wr.setHeader("Content-Type","application/json");
-                wr.write(JSON.stringify(result));
+                wr.write(JSON.stringify({result,values}));
                 conn.release();
                 wr.end();
             });
