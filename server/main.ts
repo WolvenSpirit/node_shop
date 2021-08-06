@@ -68,6 +68,8 @@ app.get('/users',_api.getUsers);
 
 app.post('/images',upload.single('image'),_api.uploadImages);
 
+app.get('/verify',_api.verify)
+
 let server = app.listen(port, ()=> {
 
     console.log(`Listening on port ${port}...`)

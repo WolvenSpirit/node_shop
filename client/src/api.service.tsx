@@ -10,7 +10,8 @@ export class HttpClient {
         order:      "/order",
         items:      "/items",
         orders:     "/orders",
-        images:     "/images"
+        images:     "/images",
+        verify:     "/verify"
     }
 
     private headers = {
@@ -72,6 +73,9 @@ export class HttpClient {
             Accept: 'application/json',
             Authorization: `Bearer ${sessionStorage.getItem('Authorization')}`
         }})
+    }
+    async verifyToken(): Promise<any> {
+        return axios.get(`${this.baseURL}${this.apiPaths.verify}`,{headers:this.headers});
     }
 
 }

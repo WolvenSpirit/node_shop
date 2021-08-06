@@ -8,6 +8,7 @@ import Alert from '@material-ui/lab/Alert';
 import Collapse from '@material-ui/core/Collapse';
 import { HttpClient } from '../api.service';
 import { baseURL } from '../config';
+import Authguard from '../guard';
 
 class Additem extends React.Component<any, any> {
 
@@ -128,6 +129,7 @@ render() {
         return <Paper>Loading...</Paper>
     }
     return (
+        <Authguard>
         <Grid container
             alignContent='center'
             alignItems='center'
@@ -156,6 +158,7 @@ render() {
                 <Button><input type='file'onChange={this.fileUpload} /></Button>
                 <Button onClick={this.save} color='secondary' variant='outlined'><SaveIcon></SaveIcon></Button>
         </Grid>
+        </Authguard>
     ); 
 }
 

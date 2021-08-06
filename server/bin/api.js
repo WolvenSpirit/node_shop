@@ -83,12 +83,22 @@ function handleSelectAll(r, wr, resource) {
     });
 }
 function verify(r, wr) {
-    if (jwt.verify(r.headers?.authorization?.split(' ')[1], cfg.secret) === undefined) {
+    try {
+        if (jwt.verify(r.headers?.authorization?.split(' ')[1], cfg.secret) === undefined) {
+            wr.writeHead(403, "Forbidden");
+            console.log('jwt invalid token');
+            wr.end();
+            return false;
+        }
+        return true;
+    }
+    catch (e) {
+        console.log(e);
         wr.writeHead(403, "Forbidden");
+        console.log('jwt invalid token');
         wr.end();
         return false;
     }
-    return true;
 }
 class api {
     constructor() {
@@ -313,6 +323,13 @@ class api {
             });
         });
     }
+    async verify(r, wr) {
+        if (!verify(r, wr)) {
+            return;
+        }
+        wr.write(JSON.stringify({ status: 'valid' }));
+        wr.end();
+    }
 }
 __decorate([
     decorators_1.log(),
@@ -410,4 +427,10 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], api.prototype, "uploadImages", null);
+__decorate([
+    decorators_1.log(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], api.prototype, "verify", null);
 exports.api = api;

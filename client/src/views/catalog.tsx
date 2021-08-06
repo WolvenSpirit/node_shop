@@ -13,17 +13,19 @@ import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 import CloseIcon from '@material-ui/icons/Close';
 import DetailsIcon from '@material-ui/icons/Details';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import AuthGuard from '../guard';
 
 class Catalog extends React.Component<any, any, any> {
 
     constructor(props:any) {
         super(props);
-        this.state = {
+            this.state = {
             list: [],
             loaded: false,
             modalOpen: false,
             open: false.valueOf,
-            cartItems: []
+            cartItems: [],
+            loggedIn: props.allow
         }
         this.addToCart = this.addToCart.bind(this);
         this.checkout = this.checkout.bind(this);
@@ -31,6 +33,9 @@ class Catalog extends React.Component<any, any, any> {
     }
 
     componentDidMount() {
+        
+        console.log(this.props);
+
         let client = new HttpClient();
         client.getItems().then((result:any)=>{
                 let data = result.data;
@@ -62,11 +67,18 @@ class Catalog extends React.Component<any, any, any> {
         this.setState({modalOpen:false})
     }
 
+    renderEditButton(item:any,f:boolean) {
+        if(sessionStorage.getItem('verified') === 'true'){
+            return <Button size='small' onClick={()=>{this.props.history.push(`/add/item/${item.id}`)}} id="button" variant="outlined"><MoreVertIcon></MoreVertIcon></Button>
+        }
+    }
+
     render() {
         if(!this.state.loaded){
             return <Paper>Loading ...</Paper>
         } else {
             return (
+                <AuthGuard>
                 <Grid container
                     direction="row"
                     justifyContent="center"
@@ -93,7 +105,7 @@ class Catalog extends React.Component<any, any, any> {
                             <div id="paper__custom">
                             {JSON.parse(item.images).map((im:string,i:any)=>{
                                 if(i===0){
-                                    return <img height="100" width="150" src={im} id={i}></img>
+                                    return <img height="100" width="150" key={`image_${k}_${i}`} src={im} id={i}></img>
                                 }
                             })}
                             <h5 id="name">{item.name} <div id="price"><small id="dollar">$</small> {item.price}</div></h5>
@@ -105,9 +117,9 @@ class Catalog extends React.Component<any, any, any> {
                             spacing={1}>
                             
                             <ButtonGroup variant="contained" color="primary" aria-label="contained primary button group">
-                            <Button size='small' onClick={this.addToCart} id="button" variant="outlined"><AddShoppingCartIcon></AddShoppingCartIcon> Add to cart</Button>
+                            <Button size='small' onClick={()=>{this.addToCart(item)}} id="button" variant="outlined"><AddShoppingCartIcon></AddShoppingCartIcon> Add to cart</Button>
                             <Button size='small' onClick={()=>{this.props.history.push(`/item/${item.id}`)}} id="button" variant="outlined"><DetailsIcon></DetailsIcon> Details</Button>
-                            <Button size='small' onClick={()=>{this.props.history.push(`/add/item/${item.id}`)}} id="button" variant="outlined"><MoreVertIcon></MoreVertIcon></Button>
+                            {this.renderEditButton(item,this.state.loggedIn)}
                             </ButtonGroup>
                         </Grid>
                         </CardActionArea>
@@ -115,6 +127,7 @@ class Catalog extends React.Component<any, any, any> {
                       </Grid>
                     })}
                 </Grid>
+                </AuthGuard>
             )
         }
     }

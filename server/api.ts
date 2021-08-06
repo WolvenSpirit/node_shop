@@ -62,12 +62,21 @@ function handleSelectAll(r: Request, wr: Response, resource: string) {
 }
 
 function verify(r: Request, wr: Response): boolean {
-    if (jwt.verify(r.headers?.authorization?.split(' ')[1] as string,cfg.secret) === undefined) {
+    try{
+        if (jwt.verify(r.headers?.authorization?.split(' ')[1] as string,cfg.secret) === undefined) {
+            wr.writeHead(403,"Forbidden");
+            console.log('jwt invalid token')
+            wr.end();
+            return false;
+        }
+        return true;
+    }catch(e:any){
+        console.log(e);
         wr.writeHead(403,"Forbidden");
+        console.log('jwt invalid token')
         wr.end();
         return false;
     }
-    return true;
 }
 
 export class api {
@@ -325,5 +334,14 @@ export class api {
                 wr.end();
             });
         });
+    }
+
+    @log()
+    async verify(r: Request, wr: Response) {
+        if(!verify(r,wr)) {
+            return;
+        }
+        wr.write(JSON.stringify({status:'valid'}));
+        wr.end();
     }
 }
