@@ -1,21 +1,41 @@
 import * as React from 'react';
 import { AppBar } from '../../node_modules/@material-ui/core/index';
 import { Toolbar } from '../../node_modules/@material-ui/core/index';
-import { Typography } from '../../node_modules/@material-ui/core/index';
 import { List } from '../../node_modules/@material-ui/core/index';
 import { ListItem } from '../../node_modules/@material-ui/core/index';
 import { ListItemText } from '../../node_modules/@material-ui/core/index';
-import { Button, ButtonGroup } from '../../node_modules/@material-ui/core/index';
 import { Link, withRouter } from 'react-router-dom';
 import { Home, AccountCircle, HowToReg, ExitToApp, ThumbUpTwoTone } from '../../node_modules/@material-ui/icons/index';
 import "../css/nav.css";
 import AuthGuard from '../guard';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import {addToCart,close,loadCart,checkout} from '../views/cart.service';
+import { Button, ButtonGroup, Card, CardActionArea, CardContent, Paper, Typography } from '@material-ui/core';
+import "../css/catalog.css";
+import { baseURL } from '../config';
+import Modal, { ModalProps } from '@material-ui/core/Modal';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
+import DeleteIcon from '@material-ui/icons/Delete';
+import CloseIcon from '@material-ui/icons/Close';
 
 class Nav extends React.Component<any, any> {
 
     constructor(props:any) {
         super(props);
-        this.state = {}
+        this.state = {
+            open: false.valueOf(),
+            modalOpen: false,
+        }
+    }
+
+    componentDidMount() {
+        document.addEventListener('loggedIn',(ev:Event)=>{
+            this.setState(this.state);
+        });
+        document.addEventListener('loggedOut',(ev:Event)=>{
+            this.setState(this.state);
+        });
     }
 
     lr() {
@@ -36,11 +56,11 @@ class Nav extends React.Component<any, any> {
                 </Link>
             </Button></AuthGuard>&nbsp;
             <AuthGuard>
-            <Button  variant="outlined">
-            <HowToReg style={{fill: "white"}} color="secondary" />
-                <Link to="/register">
-                <Typography style={{color: "white"}}>Register</Typography>
-                </Link>
+            <Button onClick={()=>{
+                this.setState({modalOpen:true});
+            }} variant="outlined">
+            <ShoppingCartIcon style={{fill: "white"}} onClick={()=>{}} color="secondary" />
+            <Typography style={{color: "white"}}>Cart</Typography>
             </Button>
             </AuthGuard>
             </ButtonGroup>
@@ -67,7 +87,8 @@ class Nav extends React.Component<any, any> {
     }
 
     render() {
-        return <div>
+        return <AuthGuard
+        ><div>
             <AppBar color="primary" position="sticky">
             <Toolbar>
             </Toolbar>
@@ -75,13 +96,33 @@ class Nav extends React.Component<any, any> {
             <AppBar color="primary" id='nav' position="sticky">
             <Toolbar>
                 <Typography style={{color: "white"}}>React-Shop</Typography>&nbsp;&nbsp;&nbsp;
-                <AuthGuard>
+                
                 {this.lr()}
-                </AuthGuard>
+                
             </Toolbar>
             </AppBar>
-            </div>
 
+            <Dialog open={this.state.modalOpen} onClose={()=>close(this)}>   
+                        <Card>
+                        <CardContent>
+                            <Typography>Shopping cart</Typography>
+                            <hr />
+                            <ul>
+                                {loadCart()}
+                            </ul>
+                            <Button onClick={()=>{sessionStorage.removeItem('cart');close(this);}} color='primary' variant="outlined" size="small"><DeleteIcon></DeleteIcon> Remove all</Button>
+                        </CardContent>
+                        <CardActionArea>
+                        <ButtonGroup variant="text" color="primary" aria-label="text primary button group">
+                            <Button onClick={()=>close(this)} color='primary' variant="outlined"><CloseIcon></CloseIcon> Close</Button>
+                            <Button onClick={()=>checkout(this)} color='primary' variant="outlined"><ShoppingCartIcon></ShoppingCartIcon> Checkout</Button>
+                        </ButtonGroup>
+                        </CardActionArea>
+                        </Card>
+            </Dialog>
+
+            </div>
+            </AuthGuard>
     }
 }
 

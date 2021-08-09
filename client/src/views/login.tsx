@@ -29,6 +29,7 @@ class Login extends React.Component<any, any> {
         if(this.state.password !== "" && this.state.email.match(this.emailMatch)) {
             client.login({email:this.state.email,password:this.state.password}).then((result:any)=>{
                 console.log(result);
+                sessionStorage.setItem('verified','true');
                 sessionStorage.setItem('Authorization',result.data.Authorization);
                 this.props.history.push('/');
             },(err)=>{

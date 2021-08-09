@@ -8,6 +8,15 @@ import ImageList from '@material-ui/core/ImageList';
 import ImageListItem from '@material-ui/core/ImageListItem';
 import { baseURL } from '../config';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
+import Modal, { ModalProps } from '@material-ui/core/Modal';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
+import DeleteIcon from '@material-ui/icons/Delete';
+import CloseIcon from '@material-ui/icons/Close';
+import {addToCart,close,loadCart,checkout} from '../views/cart.service';
+import { ButtonGroup, CardContent, Paper } from '@material-ui/core';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 
 class Item extends React.Component<RouteComponentProps, any> {
 
@@ -18,7 +27,10 @@ class Item extends React.Component<RouteComponentProps, any> {
         super(props);
         this.state = {
             item: null,
-            loaded: false
+            loaded: false,
+            open: false.valueOf(),
+            modalOpen: false,
+            count: 1
         }
         this.id = props.match.params.id;
     }
@@ -27,9 +39,9 @@ class Item extends React.Component<RouteComponentProps, any> {
        let client = new HttpClient();
        client.getItem(this.id).then((result)=>{
         console.log(result);
-        this.setState({item:result,loaded:true});
-        if(this.state.item.data[0].images !== undefined && this.state.item.data[0]?.images !== undefined) {
-            this.images = JSON.parse(this.state.item.data[0]?.images).map((img:any,i:any)=>{
+        this.setState({item:result.data[0],loaded:true});
+        if(this.state.item?.images !== undefined && this.state.item?.images !== undefined) {
+            this.images = JSON.parse(this.state.item?.images).map((img:any,i:any)=>{
                 return (
                    
                         <ImageListItem key={i} cols={1}>
@@ -56,7 +68,7 @@ class Item extends React.Component<RouteComponentProps, any> {
                 alignItems="center">
                 <br />
                 <Grid item xs={12}>
-                    <h3>&nbsp;{this.state.item?.data[0].name}&nbsp;</h3>
+                    <h3>&nbsp;{this.state.item?.name}&nbsp;</h3>
                 </Grid>
                 <br />
                 <Grid item xs={6} sm={11}>
@@ -66,21 +78,50 @@ class Item extends React.Component<RouteComponentProps, any> {
                 </Grid>
                 <hr />
                 <Grid item xs={6} sm={11}>
-                    &nbsp;{this.state.item?.data[0].description}&nbsp;
+                    &nbsp;{this.state.item?.description}&nbsp;
                 </Grid>
                 <Grid item xs={4} sm={3}>
-                &nbsp;<h1>$ {this.state.item?.data[0].price}</h1>&nbsp;
+                &nbsp;<h1>$ {this.state.item?.price}</h1>&nbsp;
                 </Grid>
                 <br />
             </Grid>
             
+            <Dialog open={this.state.modalOpen} onClose={()=>close(this)}>   
+                        <Card>
+                        <CardContent>
+                            <Typography>Shopping cart</Typography>
+                            <hr />
+                            <ul>
+                                {loadCart()}
+                            </ul>
+                            <Button onClick={()=>{sessionStorage.removeItem('cart');close(this);}} color='primary' variant="outlined" size="small"><DeleteIcon></DeleteIcon> Remove all items</Button>
+                        </CardContent>
+                        <CardActionArea>
+                        <ButtonGroup variant="text" color="primary" aria-label="text primary button group">
+                            <Button onClick={()=>close(this)} color='primary' variant="outlined"><CloseIcon></CloseIcon> Close</Button>
+                            <Button onClick={()=>checkout(this)} color='primary' variant="outlined"><ShoppingCartIcon></ShoppingCartIcon> Checkout</Button>
+                        </ButtonGroup>
+                        </CardActionArea>
+                        </Card>
+                    </Dialog>
+
             <CardActionArea>           
                 <Grid
                 container
                 direction="column"
                 justifyContent="center"
                 alignItems="center">
-                <Button variant="outlined">Add To Cart</Button>
+                    <ButtonGroup variant="contained" color="primary" aria-label="contained primary button group">
+                        <Button onClick={()=>this.setState({count: this.state.count+1})} >+</Button> 
+                        <Button disabled variant='contained'>{this.state.count}</Button>
+                        <Button onClick={()=>this.setState({count: this.state.count-1})} >-</Button>
+                    </ButtonGroup>
+                    <ButtonGroup variant="contained" color="secondary" aria-label="contained secondary  button group">
+                <Button  onClick={()=>{
+                    let item = {name:this.state.item.name,description:this.state.item.description,price: this.state.item.price,count:1};
+                    addToCart(item,this.state.count,this)
+                    }} variant="outlined">Add To Cart</Button>
+                </ButtonGroup>
                 </Grid>
             </CardActionArea>
             </Card>

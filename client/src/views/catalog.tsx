@@ -14,6 +14,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import DetailsIcon from '@material-ui/icons/Details';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import AuthGuard from '../guard';
+import {addToCart,close,loadCart,checkout} from './cart.service';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 class Catalog extends React.Component<any, any, any> {
 
@@ -23,13 +25,13 @@ class Catalog extends React.Component<any, any, any> {
             list: [],
             loaded: false,
             modalOpen: false,
-            open: false.valueOf,
+            open: false.valueOf(),
             cartItems: [],
             loggedIn: props.allow
         }
-        this.addToCart = this.addToCart.bind(this);
-        this.checkout = this.checkout.bind(this);
-        this.close = this.close.bind(this);
+        //this.addToCart = this.addToCart.bind(this);
+        //this.checkout = this.checkout.bind(this);
+        //this.close = this.close.bind(this);
     }
 
     componentDidMount() {
@@ -55,17 +57,6 @@ class Catalog extends React.Component<any, any, any> {
         });
     }
 
-    addToCart(item: any) {
-        this.setState({modalOpen:true});
-    }
-
-    checkout() {
-        this.setState({modalOpen:false});
-    }
-
-    close() {
-        this.setState({modalOpen:false})
-    }
 
     renderEditButton(item:any,f:boolean) {
         if(sessionStorage.getItem('verified') === 'true'){
@@ -83,19 +74,21 @@ class Catalog extends React.Component<any, any, any> {
                     direction="row"
                     justifyContent="center"
                     spacing={4}>
-                    <Dialog open={this.state.modalOpen} onClose={this.addToCart}>   
+                    <Dialog open={this.state.modalOpen} onClose={()=>close(this)}>   
                         <Card>
                         <CardContent>
                             <Typography>Shopping cart</Typography>
                             <hr />
                             <ul>
-                                {this.state.cartItems.map((item:any)=>{
-                                    return <li>{item.name} x {item.quantity}</li>
-                                })}
+                                {loadCart()}
                             </ul>
+                            <Button onClick={()=>{sessionStorage.removeItem('cart');close(this);}} color='primary' variant="outlined" size="small"><DeleteIcon></DeleteIcon> Remove all</Button>
                         </CardContent>
                         <CardActionArea>
-                            <Button onClick={this.close} variant="outlined"><CloseIcon></CloseIcon> Close</Button><Button onClick={this.checkout} variant="outlined"><ShoppingCartIcon></ShoppingCartIcon> Checkout</Button>
+                        <ButtonGroup variant="text" color="primary" aria-label="text primary button group">
+                            <Button onClick={()=>close(this)} color='primary' variant="outlined"><CloseIcon></CloseIcon> Close</Button>
+                            <Button onClick={()=>checkout(this)} color='primary' variant="outlined"><ShoppingCartIcon></ShoppingCartIcon> Checkout</Button>
+                        </ButtonGroup>
                         </CardActionArea>
                         </Card>
                     </Dialog>
@@ -117,7 +110,7 @@ class Catalog extends React.Component<any, any, any> {
                             spacing={1}>
                             
                             <ButtonGroup variant="contained" color="primary" aria-label="contained primary button group">
-                            <Button size='small' onClick={()=>{this.addToCart(item)}} id="button" variant="outlined"><AddShoppingCartIcon></AddShoppingCartIcon> Add to cart</Button>
+                            <Button size='small' onClick={()=>{addToCart(item,1,this)}} id="button" variant="outlined"><AddShoppingCartIcon></AddShoppingCartIcon> Add to cart</Button>
                             <Button size='small' onClick={()=>{this.props.history.push(`/item/${item.id}`)}} id="button" variant="outlined"><DetailsIcon></DetailsIcon> Details</Button>
                             {this.renderEditButton(item,this.state.loggedIn)}
                             </ButtonGroup>
