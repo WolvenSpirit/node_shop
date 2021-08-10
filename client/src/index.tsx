@@ -8,6 +8,7 @@ import Item from "./views/item";
 import Nav from "./partials/nav";
 import Catalog from "./views/catalog";
 import Additem from "./views/additem";
+import Checkout from './views/checkout';
 
 class App extends React.Component {
 
@@ -28,6 +29,7 @@ let routing = (
             <Route path="/item/:id" component={Item} />
             <Route exact path='/add/item' component={Additem} />
             <Route path='/add/item/:id' component={Additem} />
+            <Route path='/checkout' component={Checkout} />
         </div>
     </Router>
 )
