@@ -82,12 +82,12 @@ class Catalog extends React.Component<any, any, any> {
                             <ul>
                                 {loadCart()}
                             </ul>
-                            <Button onClick={()=>{sessionStorage.removeItem('cart');close(this);}} color='primary' variant="outlined" size="small"><DeleteIcon></DeleteIcon> Remove all</Button>
+                            <Button onClick={()=>{sessionStorage.removeItem('cart');close(this);}} color='primary' variant="text" size="small"><DeleteIcon></DeleteIcon> Remove all</Button>
                         </CardContent>
                         <CardActionArea>
-                        <ButtonGroup variant="text" color="primary" aria-label="text primary button group">
+                        <ButtonGroup fullWidth={true} variant="text" color="primary" aria-label="text primary button group">
                             <Button onClick={()=>close(this)} color='primary' variant="outlined"><CloseIcon></CloseIcon> Close</Button>
-                            <Button onClick={()=>checkout(this)} color='primary' variant="outlined"><ShoppingCartIcon></ShoppingCartIcon> Checkout</Button>
+                            <Button onClick={()=>{checkout(this);this.props.history.push('/checkout');}} color='primary' variant="contained"><ShoppingCartIcon></ShoppingCartIcon> Checkout</Button>
                         </ButtonGroup>
                         </CardActionArea>
                         </Card>

@@ -9,11 +9,12 @@ import Nav from "./partials/nav";
 import Catalog from "./views/catalog";
 import Additem from "./views/additem";
 import Checkout from './views/checkout';
+import Paidorder from './views/paidorder';
 
 class App extends React.Component {
 
     render(): React.ReactNode {
-        return <h1>Hello React App</h1>
+        return <h1>React Shop</h1>
     }
 
 }
@@ -30,9 +31,10 @@ let routing = (
             <Route exact path='/add/item' component={Additem} />
             <Route path='/add/item/:id' component={Additem} />
             <Route path='/checkout' component={Checkout} />
+            <Route path='/paid/:cb' component={Paidorder} />
         </div>
     </Router>
 )
 
-
+export default App;
 render(routing, document.getElementById("root"));

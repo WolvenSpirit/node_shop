@@ -39,7 +39,18 @@ class Item extends React.Component<RouteComponentProps, any> {
        let client = new HttpClient();
        client.getItem(this.id).then((result)=>{
         console.log(result);
-        this.setState({item:result.data[0],loaded:true});
+        let count = 1;
+        /*
+        let cart = JSON.parse(sessionStorage.getItem('cart') as string)
+        if(cart !== null) {
+            for(let i=0;i<cart.length;i++) {
+                if(cart[i].name == result.data[0].name) {
+                    count = cart[i].count;
+                }
+            }
+        }
+        */
+        this.setState({item:result.data[0],loaded:true,count:count});
         if(this.state.item?.images !== undefined && this.state.item?.images !== undefined) {
             this.images = JSON.parse(this.state.item?.images).map((img:any,i:any)=>{
                 return (
@@ -94,12 +105,12 @@ class Item extends React.Component<RouteComponentProps, any> {
                             <ul>
                                 {loadCart()}
                             </ul>
-                            <Button onClick={()=>{sessionStorage.removeItem('cart');close(this);}} color='primary' variant="outlined" size="small"><DeleteIcon></DeleteIcon> Remove all items</Button>
+                            <Button onClick={()=>{sessionStorage.removeItem('cart');close(this);}} color='primary' variant="text" size="small"><DeleteIcon></DeleteIcon> Remove all items</Button>
                         </CardContent>
                         <CardActionArea>
                         <ButtonGroup variant="text" color="primary" aria-label="text primary button group">
                             <Button onClick={()=>close(this)} color='primary' variant="outlined"><CloseIcon></CloseIcon> Close</Button>
-                            <Button onClick={()=>checkout(this)} color='primary' variant="outlined"><ShoppingCartIcon></ShoppingCartIcon> Checkout</Button>
+                            <Button onClick={()=>checkout(this)} color='primary' variant="contained"><ShoppingCartIcon></ShoppingCartIcon> Checkout</Button>
                         </ButtonGroup>
                         </CardActionArea>
                         </Card>
