@@ -110,7 +110,7 @@ class Item extends React.Component<RouteComponentProps, any> {
                         <CardActionArea>
                         <ButtonGroup variant="text" color="primary" aria-label="text primary button group">
                             <Button onClick={()=>close(this)} color='primary' variant="outlined"><CloseIcon></CloseIcon> Close</Button>
-                            <Button onClick={()=>checkout(this)} color='primary' variant="contained"><ShoppingCartIcon></ShoppingCartIcon> Checkout</Button>
+                            <Button onClick={()=>{checkout(this);this.props.history.push('/checkout');}} color='primary' variant="contained"><ShoppingCartIcon></ShoppingCartIcon> Checkout</Button>
                         </ButtonGroup>
                         </CardActionArea>
                         </Card>

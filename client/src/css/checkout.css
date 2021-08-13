@@ -4,3 +4,9 @@
 #checkout_item_name{
     width: 15em;
 }
+#checkout{
+    padding: 1em;
+}
+#checkout_column{
+    padding: .3em;
+}
