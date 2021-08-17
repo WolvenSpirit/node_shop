@@ -1,5 +1,5 @@
 #paper__custom{
-    padding: 2em;
+    padding: auto;
     padding-top: .5em;
     margin: 1em;
     max-height:9em;
@@ -7,7 +7,7 @@
 #name{
     font-family: 'Roboto', sans-serif;
     color:black;
-    font-size: .9em
+    font-size: .7em
 }
 #price{
     font-family: 'Roboto', sans-serif;

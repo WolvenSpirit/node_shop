@@ -93,7 +93,7 @@ class Catalog extends React.Component<any, any, any> {
                         </Card>
                     </Dialog>
                     {this.state.list.map((item:any,k:number)=>{
-                        return  <Grid item xs={8} sm={4}>
+                        return  <Grid item xs={8} sm={3}>
                         <Card id="paper">
                             <div id="paper__custom">
                             {JSON.parse(item.images).map((im:string,i:any)=>{

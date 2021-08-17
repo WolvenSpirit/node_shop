@@ -27,6 +27,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.api = void 0;
 const config_1 = require("./config");
@@ -34,7 +37,13 @@ const main_1 = require("./main");
 const decorators_1 = require("./decorators");
 const auth_1 = require("./auth");
 const jwt = __importStar(require("jsonwebtoken"));
+const smtp_connection_1 = __importDefault(require("nodemailer/lib/smtp-connection"));
 const cfg = new config_1.config();
+let connection = new smtp_connection_1.default({
+    port: parseInt(process.env.SMTP_PORT, 10),
+    host: process.env.SMTP_HOST,
+    secure: true
+});
 function handleError(err, conn, wr) {
     if (err) {
         console.log(err.message);
@@ -199,10 +208,6 @@ class api {
         });
     }
     async postOrder(r, wr) {
-        console.log(r.body);
-        if (!verify(r, wr)) {
-            return;
-        }
         main_1.db.getConnection((err, conn) => {
             handleError(err, conn, wr);
             conn.query(cfg.schema.queries.insert.order, r.body, (err, result, fields) => {
@@ -210,6 +215,45 @@ class api {
                     handleError(err, conn, wr);
                     return;
                 }
+                connection.connect((err) => {
+                    if (err) {
+                        console.log("Connection error:", err);
+                        return;
+                    }
+                    if (connection.alreadySecured) {
+                        console.log('Secure connection to SMTP server established');
+                    }
+                    connection.login({ credentials: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } }, (err) => {
+                        if (err) {
+                            console.log("Login error:", err);
+                            return;
+                        }
+                        console.log(r.body);
+                        let details = JSON.parse(r.body.details);
+                        let units = "";
+                        for (let i = 0; i < details.items.length; i++) {
+                            units += `\n
+                            Name: ${details?.items[i]?.name} Price/unit: ${details?.items[i]?.price} Amount: ${details?.items[i]?.count} \n`;
+                        }
+                        connection.send({
+                            from: process.env.SMTP_USER,
+                            to: details.email,
+                        }, `Subject: Order ${r.body.name} 
+                        \n\n\n
+                        Transaction status: ${details.transaction.details.status} \n
+                        Transaction ID: ${details.transaction.details.id} \n
+                        Details:
+                        ${units} \n
+                        Total: ${details?.total} ${details?.transaction?.details?.purchase_units[0]?.amount?.currency_code} \n
+                        `, (err, info) => {
+                            if (err) {
+                                console.log("Send error:", err);
+                            }
+                            console.log(info);
+                            connection.quit();
+                        });
+                    });
+                });
                 console.log(result);
                 wr.setHeader("Content-Type", "application/json");
                 wr.write(JSON.stringify(result));
@@ -220,9 +264,6 @@ class api {
     }
     async patchOrder(r, wr) {
         console.log(r.body);
-        if (!verify(r, wr)) {
-            return;
-        }
         main_1.db.getConnection((err, conn) => {
             if (err) {
                 handleError(err, conn, wr);

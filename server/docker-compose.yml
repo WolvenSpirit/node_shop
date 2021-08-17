@@ -18,11 +18,11 @@ services:
     http_server:
         image: s:latest
         ports: 
-            - 9003:9003
+            - 9009:9009
         networks: 
             - linknet
         environment: 
-            PORT: 9003
+            PORT: 9009
             DB_HOST: mariadb
             DB_PORT: 3306
             DB_NAME: node_shop_01

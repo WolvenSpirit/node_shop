@@ -15,91 +15,70 @@ import {
 import { ButtonGroup, IconButton, TextField } from '@material-ui/core';
 import { isTemplateSpan } from 'typescript';
 import "../css/checkout.css";
-  
-  const paypalScriptOptions: PayPalScriptOptions = {
+import { HttpClient } from '../api.service';
+import { baseURL } from '../config';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
+var total:any;
+var payer:any;
+var redirectHook = (data:any) => {};
+ 
+class Checkout extends React.Component<any, any> {
+  private client: HttpClient = new HttpClient(baseURL);
+  private paypalbuttonTransactionProps: PayPalButtonsComponentOptions = {
+    style: { layout: "vertical" },
+    createOrder(data:any, actions:any) {
+      return actions.order.create({
+        payer:{
+          name:{
+            given_name:payer.given_name,
+            surname:payer.surname
+          },
+          email_address:payer.email_address,
+          payer_id:payer.payer_id,
+          phone:{
+            phone_number:payer.phone
+          },
+          address:{
+            address_line_1:payer.address_line_1, 
+            address_line_2:payer.address_line_2, 
+            admin_area_2:payer.admin_area_2, 
+            admin_area_1:payer.admin_area_1,
+            postal_code:payer.postal_code,
+            country_code:payer.country_code
+          },
+          tax_info:{
+            tax_id:payer.tax_id,
+            tax_id_type:payer.tax_id_type
+          },
+          birth_date:payer.birth_date
+        },
+        purchase_units: [
+          {
+            amount: {
+              value: total
+            }
+          }
+        ]
+      });
+    },
+
+  };
+
+  private paypalScriptOptions: PayPalScriptOptions = {
     "client-id":
       "AaUpVv8WDVM5uezwsQo79K6YBKmqm3EeLSOx5TFTX4RM2_ephwW68aJ4_ASXYPjbI8OyuXchwgkQ7bRl",
     currency: "USD"
   };
-  function Button() {
-    /**
-     * usePayPalScriptReducer use within PayPalScriptProvider
-     * isPending: not finished loading(default state)
-     * isResolved: successfully loaded
-     * isRejected: failed to load
-     */
-    const [{ isPending }] = usePayPalScriptReducer();
-    const paypalbuttonTransactionProps: PayPalButtonsComponentOptions = {
-      style: { layout: "vertical" },
-      createOrder(data:any, actions:any) {
-        return actions.order.create({
-          payer:{
-            name:{
-              given_name:data.given_name,
-              surname:data.surname
-            },
-            email_address:data.email_address,
-            payer_id:data.payer_id,
-            phone:{
-              phone_number:data.phone_number
-            },
-            address:{
-              address_line_1:data.address_line_1, 
-              address_line_2:data.address_line_2, 
-              admin_area_2:data.admin_area_2, 
-              admin_area_1:data.admin_area_1,
-              postal_code:data.postal_code,
-              country_code:data.country_code
-            },
-            tax_info:{
-              tax_id:data.tax_id,
-              tax_id_type:data.tax_id_type
-            },
-            birth_date:data.birth_date
-          },
-          purchase_units: [
-            {
-              amount: {
-                value: data.total
-              }
-            }
-          ]
-        });
-      },
-      onApprove(data, actions) {
-        /**
-         * data: {
-         *   orderID: string;
-         *   payerID: string;
-         *   paymentID: string | null;
-         *   billingToken: string | null;
-         *   facilitatorAccesstoken: string;
-         * }
-         */
-        return actions.order.capture().then((details) => {
-          alert(
-            "Transaction completed by" +
-              (details?.payer.name.given_name ?? "No details")
-          );
-  
-          alert("Data details: " + JSON.stringify(data, null, 2));
-        });
-      }
-    };
-    return (
-      <>
-        {isPending ? <h2>Load Smart Payment Button...</h2> : null}
-        <PayPalButtons {...paypalbuttonTransactionProps} />
-      </>
-    );
-  }
- 
-class Checkout extends React.Component<any, any> {
 
     constructor(props: any) {
       super(props);
-        let items = JSON.parse(sessionStorage.getItem('cart') as string | "") 
+        let items = JSON.parse(sessionStorage.getItem('cart') as string | "");
+        if(items === null) {
+          items = [];
+        }
         let t = this.total(items);
+        total = t;
         this.state = {
             total: t,
             orderName: "",
@@ -109,7 +88,7 @@ class Checkout extends React.Component<any, any> {
             surname:"",
             email_address:"",
             payer_id:"",
-            phone_number:"",
+            phone:"",
             address_line_1:"", 
             address_line_2:"", 
             admin_area_2:"", 
@@ -121,9 +100,17 @@ class Checkout extends React.Component<any, any> {
             birth_date:""
         }
         this.handleChange = this.handleChange.bind(this);
+        redirectHook = (data:any) => {
+          this.client.postOrder(data).then((response:any)=>{
+            this.props.history.push("/paid");  
+          });
+        }
     }
 
     total(items: Array<any>): number {
+      if(!items || items.length === 0) {
+        return 0;
+      }
       let t = 0;
       items.forEach((item:any)=>{
         t += item?.price * item?.count;
@@ -137,6 +124,7 @@ class Checkout extends React.Component<any, any> {
 
     handleChange(e:any){
       this.setState({[e?.target?.name]:e.target.value});
+      payer = this.state;
   }
 
     subItem(name:string) {
@@ -148,6 +136,7 @@ class Checkout extends React.Component<any, any> {
         }
       }
       let t = this.total(this.state.items);
+      total = t;
       sessionStorage.setItem('cart',JSON.stringify(this.state.items));
       this.setState({items:this.state.items,total:t});
     }
@@ -158,6 +147,7 @@ class Checkout extends React.Component<any, any> {
         }
       }
       let t = this.total(this.state.items);
+      total = t;
       sessionStorage.setItem('cart',JSON.stringify(this.state.items));
       this.setState({items:this.state.items,total:t});
     }
@@ -169,6 +159,7 @@ class Checkout extends React.Component<any, any> {
         }
       }
       let t = this.total(arr);
+      total = t;
       this.setState({items:arr,total:t});
       sessionStorage.setItem('cart',JSON.stringify(arr)); 
     }
@@ -205,20 +196,49 @@ class Checkout extends React.Component<any, any> {
                     </Grid>
                     <Grid container alignContent="center">
                     <Grid id="checkout_column" item xs={12} md={6}>
-                        <TextField  fullWidth={true} type="text" name="given_name" label="Given name" value={this.state.given_name} onChange={this.handleChange} />
-                        <TextField  fullWidth={true} type="text" name="surname" label="Surname" value={this.state.surname} onChange={this.handleChange} />
-                        <TextField  fullWidth={true} type="email" name="email_address" label="Email address" value={this.state.email_address} onChange={this.handleChange} />
-                        <TextField  fullWidth={true} type="text" name="phone" label="Phone number" value={this.state.phone_number} onChange={this.handleChange} />
+                        <TextField id="i1" fullWidth={true} type="text" name="given_name" label="Given name" value={this.state.given_name} onChange={this.handleChange} />
+                        <TextField id="i2" fullWidth={true} type="text" name="surname" label="Surname" value={this.state.surname} onChange={this.handleChange} />
+                        <TextField id="i3" fullWidth={true} type="email" name="email_address" label="Email address" value={this.state.email_address} onChange={this.handleChange} />
+                        <TextField id="i4" fullWidth={true} type="text" name="phone" label="Phone number" value={this.state.phone} onChange={this.handleChange} />
                     </Grid>
                     <Grid id="checkout_column" item xs={12} md={6}>
-                    <TextField  fullWidth={true} type="text" name="address1" label="Address1" value={this.state.address_line_1} onChange={this.handleChange} />
-                        <TextField  fullWidth={true} type="text" name="address2" label="Address2" value={this.state.address_line_2} onChange={this.handleChange} />
-                        <TextField  fullWidth={true} type="text" name="postalCode" label="Postal code" value={this.state.postal_code} onChange={this.handleChange} />
-                        <TextField  fullWidth={true} type="text" name="countryCode" label="Country code" value={this.state.country_code} onChange={this.handleChange} />
+                        <TextField id="i5" fullWidth={true} type="text" name="address_line_1" label="Address1" value={this.state.address_line_1} onChange={this.handleChange} />
+                        <TextField id="i6" fullWidth={true} type="text" name="address_line_2" label="Address2" value={this.state.address_line_2} onChange={this.handleChange} />
+                        <TextField id="i7" fullWidth={true} type="text" name="postal_code" label="Postal code" value={this.state.postal_code} onChange={this.handleChange} />
+                        <TextField id="i8" fullWidth={true} type="text" name="country_code" label="Country code" value={this.state.country_code} onChange={this.handleChange} />
                     </Grid>
                     </Grid>
-                    <PayPalScriptProvider options={paypalScriptOptions}>
-                        <Button />
+                    <PayPalScriptProvider options={this.paypalScriptOptions}>
+                        <PayPalButtons {...{
+                          createOrder(data:any,actions:any) {
+                            return actions.order.create({
+                              purchase_units: [
+                                {
+                                  amount: {
+                                    value: total
+                                  }
+                                }
+                              ]
+                            });
+                          },
+                          onApprove(data, actions) {
+                            /**
+                             * data: {
+                             *   orderID: string;
+                             *   payerID: string;
+                             *   paymentID: string | null;
+                             *   billingToken: string | null;
+                             *   facilitatorAccesstoken: string;
+                             * }
+                             */
+                            sessionStorage.removeItem('cart');
+                            return actions.order.capture().then((details) => {
+                              let transaction =  {details,data};
+                              payer.transaction = transaction;
+                              redirectHook({name:data.orderID,details:JSON.stringify(payer),total_price:total,paid:1});
+                            });
+                          }
+                        }} />
                     </PayPalScriptProvider>
                 </Card>
             </Grid>
@@ -226,7 +246,7 @@ class Checkout extends React.Component<any, any> {
         )
 
     }
-
+    
 }
 
 export default Checkout;

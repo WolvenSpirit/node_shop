@@ -31,7 +31,7 @@ let routing = (
             <Route exact path='/add/item' component={Additem} />
             <Route path='/add/item/:id' component={Additem} />
             <Route path='/checkout' component={Checkout} />
-            <Route path='/paid/:cb' component={Paidorder} />
+            <Route path='/paid' component={Paidorder} />
         </div>
     </Router>
 )

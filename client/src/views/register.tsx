@@ -4,12 +4,13 @@ import { HttpClient } from '../api.service';
 import Alert from '@material-ui/lab/Alert';
 import Collapse from '@material-ui/core/Collapse';
 import CloseIcon from '@material-ui/icons/Close';
+import { baseURL } from '../config';
 
 class Register extends React.Component<any, any> {
 
     constructor(props: any) {
         super(props);
-        this.state = {
+        this.state = {  
             email: "",
             password1: "",
             password2: "",
@@ -37,7 +38,7 @@ class Register extends React.Component<any, any> {
             return;
         }
         if(this.state.password1 === this.state.password2 && this.state.email !== "" && this.state.password1 !== "") {
-        let client = new HttpClient('http://localhost:9003');
+        let client = new HttpClient(baseURL);
         client.register({email:this.state.email,password:this.state.password1}).then((result:any)=>{
             console.log(result);
             sessionStorage.setItem('Authorization',result.data.Authorization);

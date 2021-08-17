@@ -6,10 +6,15 @@ import { QueryError } from "mysql2";
 import PoolConnection from "mysql2/typings/mysql/lib/PoolConnection";
 import { compare, hash } from "./auth";
 import * as jwt from "jsonwebtoken";
+import SMTPConnection from "nodemailer/lib/smtp-connection";
 
 const cfg = new config();
 
-type dbPayload = Buffer | string | Uint8Array
+let connection: SMTPConnection = new SMTPConnection({
+    port:parseInt(process.env.SMTP_PORT as string,10),
+    host:process.env.SMTP_HOST as string,
+    secure: true
+});
 
 function handleError(err:Error, conn: PoolConnection, wr: Response) {
     if(err) {
@@ -204,10 +209,6 @@ export class api {
 
     @log()
     async postOrder(r: Request, wr: Response) {
-        console.log(r.body);
-        if(!verify(r,wr)) {
-            return;
-        }
         db.getConnection((err: Error, conn: PoolConnection)=>{
             handleError(err,conn,wr);
             conn.query(cfg.schema.queries.insert.order,r.body,(err,result,fields)=>{
@@ -215,11 +216,52 @@ export class api {
                     handleError(err,conn,wr);
                     return;
                 }
+                connection.connect((err)=>{
+                    if(err) {
+                        console.log("Connection error:",err);
+                        return;
+                    }
+                    if(connection.alreadySecured) {
+                        console.log('Secure connection to SMTP server established');
+                    }
+                    connection.login({credentials:{user:process.env.SMTP_USER as string,pass:process.env.SMTP_PASS as string}},(err)=>{
+                        if(err) {
+                            console.log("Login error:",err);
+                            return;
+                        }
+                        console.log(r.body);
+                        let details = JSON.parse(r.body.details);
+                        let units = "";
+                        for(let i=0;i<details.items.length;i++) {
+                            units += `\n
+                            Name: ${details?.items[i]?.name} Price/unit: ${details?.items[i]?.price} Amount: ${details?.items[i]?.count} \n`
+                        } 
+                        connection.send({
+                            from:process.env.SMTP_USER as string,
+                            to:details.email,
+                        },`Subject: Order ${r.body.name} 
+                        \n\n\n
+                        Transaction status: ${details.transaction.details.status} \n
+                        Transaction ID: ${details.transaction.details.id} \n
+                        Details:
+                        ${units} \n
+                        Total: ${details?.total} ${details?.transaction?.details?.purchase_units[0]?.amount?.currency_code} \n
+                        `
+                        ,(err,info)=>{
+                            if(err) {
+                                console.log("Send error:",err);
+                            }
+                            console.log(info);
+                            connection.quit();
+                        });
+                    });
+                });
                 console.log(result);
                 wr.setHeader("Content-Type","application/json");
                 wr.write(JSON.stringify(result));
                 conn.release();
                 wr.end();
+
             });
         })
     }
@@ -227,9 +269,6 @@ export class api {
     @log()
     async patchOrder(r: Request, wr: Response) {
         console.log(r.body);
-        if(!verify(r,wr)) {
-            return;
-        }
         db.getConnection((err,conn)=>{
             if(err) {
                 handleError(err,conn,wr)

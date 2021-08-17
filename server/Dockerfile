@@ -10,8 +10,6 @@ RUN tsc
 
 COPY .env ./bin/.env
 
-WORKDIR ./bin
-
-RUN mkdir images
+RUN mkdir ./bin/images; exit 0;
 
 ENTRYPOINT node ./bin/main.js
