@@ -7,7 +7,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import Alert from '@material-ui/lab/Alert';
 import Collapse from '@material-ui/core/Collapse';
 import { HttpClient } from '../api.service';
-import { baseURL } from '../config';
+import { baseURL, constructURL } from '../config';
 import Authguard from '../guard';
 
 class Additem extends React.Component<any, any> {
@@ -123,10 +123,6 @@ class Additem extends React.Component<any, any> {
         });
     }
 
-    constructURL = (s: string): string => {
-        let isNotRelative: RegExp = /https\:\/\//g;
-        return s.match(isNotRelative) !== null ? s : `${baseURL}${s}`;
-    };
 
 render() {
     console.log('render')
@@ -157,7 +153,7 @@ render() {
                 alignContent='center'
                 alignItems='center'>
                         {(this.state.images).map((url:string,k:any)=>{
-                            return <Grid item><a target='__blank' href={this.constructURL(url)}><img height='50' src={this.constructURL(url)} /></a></Grid>
+                            return <Grid item><a target='__blank' href={constructURL(url)}><img height='50' src={constructURL(url)} /></a></Grid>
                         })} 
                 </Grid>
                 <Button><input type='file'onChange={this.fileUpload} /></Button>

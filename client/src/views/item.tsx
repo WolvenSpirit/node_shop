@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import ImageList from '@material-ui/core/ImageList';
 import ImageListItem from '@material-ui/core/ImageListItem';
-import { baseURL } from '../config';
+import { baseURL, constructURL } from '../config';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import Modal, { ModalProps } from '@material-ui/core/Modal';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -50,11 +50,6 @@ class Item extends React.Component<RouteComponentProps, any> {
             }
         }
         */
-        
-        let constructURL = (s: string): string => {
-            let isNotRelative: RegExp = /https\:\/\//g;
-            return s.match(isNotRelative) !== null ? s : `${baseURL}${s}`;
-        };
 
         this.setState({item:result.data[0],loaded:true,count:count});
         if(this.state.item?.images !== undefined && this.state.item?.images !== undefined) {

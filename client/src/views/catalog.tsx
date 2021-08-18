@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import { HttpClient } from '../api.service';
 import { Button, ButtonGroup, Card, CardActionArea, CardContent, Paper, Typography } from '@material-ui/core';
 import "../css/catalog.css";
-import { baseURL } from '../config';
+import { baseURL, imagePlaceholderURL, constructURL } from '../config';
 import Modal, { ModalProps } from '@material-ui/core/Modal';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
@@ -34,11 +34,6 @@ class Catalog extends React.Component<any, any, any> {
         //this.close = this.close.bind(this);
     }
 
-    constructURL = (s: string): string => {
-        let isNotRelative: RegExp = /https\:\/\//g;
-        return s.match(isNotRelative) !== null ? s : `${baseURL}${s}`;
-    };
-
     componentDidMount() {
         
         console.log(this.props);
@@ -49,11 +44,11 @@ class Catalog extends React.Component<any, any, any> {
                 data.map((item:any)=>{
                     if(item.images == "[null]") /* "[null]" is garbage returned by no images in Join query */ {
                         console.log("null image found");
-                        return item.images=JSON.stringify(["https://www.nicomatic.com/themes/custom/jango_sub/img/no-image.png"]);
+                        return item.images=JSON.stringify([imagePlaceholderURL]);
                     } else {
                         let img = JSON.parse(item.images);
                         let m = img.map((v:string)=>{
-                            return v=this.constructURL(v)});
+                            return v=constructURL(v)});
                         return item.images = JSON.stringify(m);
                     }
                 });
