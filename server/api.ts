@@ -123,7 +123,7 @@ export class api {
         if(!verify(r,wr)) {
             return;
         }
-        handleUrlParamReq(r,wr,'select','all_orders');
+        handleSelectAll(r,wr,'all_orders');
     }
 
     @log()

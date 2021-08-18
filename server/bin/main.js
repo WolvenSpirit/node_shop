@@ -59,7 +59,7 @@ app.use('/static/css', express_1.default.static('bin/client_dist/static/css'));
 let _api = new api_1.api();
 app.get('/', _api.index);
 app.get('/items', _api.getItems);
-app.get('/orders/:id', _api.getOrders);
+app.get('/orders', _api.getOrders);
 // app.get('/main.js',_api.serveBundleJS);
 app.get('/item/:id', _api.getItem);
 app.post('/item', _api.postItem);

@@ -10,6 +10,7 @@ import Catalog from "./views/catalog";
 import Additem from "./views/additem";
 import Checkout from './views/checkout';
 import Paidorder from './views/paidorder';
+import Orders from './views/orders';
 
 class App extends React.Component {
 
@@ -32,6 +33,7 @@ let routing = (
             <Route path='/add/item/:id' component={Additem} />
             <Route path='/checkout' component={Checkout} />
             <Route path='/paid' component={Paidorder} />
+            <Route path='/orders' component={Orders} />
         </div>
     </Router>
 )

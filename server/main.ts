@@ -52,7 +52,7 @@ let _api: api = new api();
 
 app.get('/',_api.index);
 app.get('/items',_api.getItems);
-app.get('/orders/:id',_api.getOrders);
+app.get('/orders',_api.getOrders);
 // app.get('/main.js',_api.serveBundleJS);
 
 app.get('/item/:id',_api.getItem);
