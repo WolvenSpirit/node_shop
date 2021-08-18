@@ -50,13 +50,19 @@ class Item extends React.Component<RouteComponentProps, any> {
             }
         }
         */
+        
+        let constructURL = (s: string): string => {
+            let isNotRelative: RegExp = /https\:\/\//g;
+            return s.match(isNotRelative) !== null ? s : `${baseURL}${s}`;
+        };
+
         this.setState({item:result.data[0],loaded:true,count:count});
         if(this.state.item?.images !== undefined && this.state.item?.images !== undefined) {
             this.images = JSON.parse(this.state.item?.images).map((img:any,i:any)=>{
                 return (
                    
                         <ImageListItem key={i} cols={1}>
-                <img key={i} src={`${baseURL}${img}`} />
+                <img key={i} src={constructURL(img)} />
                         </ImageListItem>
  
                 )

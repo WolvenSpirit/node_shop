@@ -123,6 +123,11 @@ class Additem extends React.Component<any, any> {
         });
     }
 
+    constructURL = (s: string): string => {
+        let isNotRelative: RegExp = /https\:\/\//g;
+        return s.match(isNotRelative) !== null ? s : `${baseURL}${s}`;
+    };
+
 render() {
     console.log('render')
     if(this.state.loaded === false) {
@@ -152,7 +157,7 @@ render() {
                 alignContent='center'
                 alignItems='center'>
                         {(this.state.images).map((url:string,k:any)=>{
-                            return <Grid item><a target='__blank' href={baseURL+url}><img height='50' src={baseURL+url} /></a></Grid>
+                            return <Grid item><a target='__blank' href={this.constructURL(url)}><img height='50' src={this.constructURL(url)} /></a></Grid>
                         })} 
                 </Grid>
                 <Button><input type='file'onChange={this.fileUpload} /></Button>

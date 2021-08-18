@@ -109,6 +109,29 @@ function verify(r, wr) {
         return false;
     }
 }
+function insertImage(r, wr, url) {
+    let values = {
+        item_id: r.body.item_id,
+        url: url
+    };
+    main_1.db.getConnection((err, conn) => {
+        if (err) {
+            handleError(err, conn, wr);
+            return;
+        }
+        conn.query(cfg.schema.queries?.insert?.image, values, (err, result, fields) => {
+            if (err) {
+                handleError(err, conn, wr);
+                return;
+            }
+            console.log(result);
+            wr.setHeader("Content-Type", "application/json");
+            wr.write(JSON.stringify({ result, values }));
+            conn.release();
+            wr.end();
+        });
+    });
+}
 class api {
     constructor() {
     }
@@ -342,27 +365,20 @@ class api {
             return;
         }
         console.log(r);
-        let values = {
-            item_id: r.body.item_id,
-            url: `/images/${r.file?.filename}`
-        };
-        main_1.db.getConnection((err, conn) => {
-            if (err) {
-                handleError(err, conn, wr);
-                return;
+        insertImage(r, wr, `/images/${r.file?.filename}`);
+    }
+    async uploadImagesS3(r, wr) {
+        if (r.file && verify(r, wr)) {
+            console.log(r.file);
+            try {
+                await main_1.s3Client.putObject(process.env.S3_BUCKET, r.file?.originalname, r.file?.buffer);
+                const url = await main_1.s3Client.presignedGetObject(process.env.S3_BUCKET, r.file?.originalname);
+                insertImage(r, wr, url);
             }
-            conn.query(cfg.schema.queries?.insert?.image, values, (err, result, fields) => {
-                if (err) {
-                    handleError(err, conn, wr);
-                    return;
-                }
-                console.log(result);
-                wr.setHeader("Content-Type", "application/json");
-                wr.write(JSON.stringify({ result, values }));
-                conn.release();
-                wr.end();
-            });
-        });
+            catch (e) {
+                console.log('uploadImagesS3 failed:', e);
+            }
+        }
     }
     async verify(r, wr) {
         if (!verify(r, wr)) {
@@ -463,11 +479,19 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], api.prototype, "register", null);
 __decorate([
-    decorators_1.log(),
+    decorators_1.log() // local server filesystem
+    ,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], api.prototype, "uploadImages", null);
+__decorate([
+    decorators_1.log() // S3 compatible storage
+    ,
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], api.prototype, "uploadImagesS3", null);
 __decorate([
     decorators_1.log(),
     __metadata("design:type", Function),

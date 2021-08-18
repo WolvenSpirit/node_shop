@@ -34,6 +34,11 @@ class Catalog extends React.Component<any, any, any> {
         //this.close = this.close.bind(this);
     }
 
+    constructURL = (s: string): string => {
+        let isNotRelative: RegExp = /https\:\/\//g;
+        return s.match(isNotRelative) !== null ? s : `${baseURL}${s}`;
+    };
+
     componentDidMount() {
         
         console.log(this.props);
@@ -48,7 +53,7 @@ class Catalog extends React.Component<any, any, any> {
                     } else {
                         let img = JSON.parse(item.images);
                         let m = img.map((v:string)=>{
-                            return v=`${baseURL}${v}`});
+                            return v=this.constructURL(v)});
                         return item.images = JSON.stringify(m);
                     }
                 });

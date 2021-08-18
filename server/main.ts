@@ -7,6 +7,11 @@ import multer from "multer";
 import bodyParser from "body-parser";
 import cors from "cors";
 import path from "path";
+import Minio from 'minio';
+
+const _minio = require("minio");
+
+export let s3Client: Minio.Client;
 
 var storage = multer.diskStorage({
     destination:'./bin/images',
@@ -65,8 +70,19 @@ app.post('/register',_api.register);
 
 app.get('/user/:id',_api.getUser);
 app.get('/users',_api.getUsers);
-
-app.post('/images',upload.single('image'),_api.uploadImages);
+if(process.env.S3_ENABLE === "true") {
+    s3Client = new _minio.Client({
+        endPoint: process.env.S3_ENDPOINT as string,
+        port: parseInt(process.env.S3_PORT as string,10),
+        useSSL: JSON.parse(process.env.S3_USESSL as string),
+        accessKey: process.env.S3_ACCESSKEY as string,
+        secretKey: process.env.S3_SECRETKEY as string
+    });
+    s3Client.makeBucket(process.env.S3_BUCKET as string,process.env.S3_REGION as string,(err:any)=>{err ? console.log(err) : null});
+    app.post('/images',multer({storage:multer.memoryStorage()}).single('image'),_api.uploadImagesS3);
+} else {
+    app.post('/images',upload.single('image'),_api.uploadImages);
+}
 
 app.get('/verify',_api.verify)
 

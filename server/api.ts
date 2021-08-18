@@ -1,6 +1,6 @@
 import express, {NextFunction, Request, Response, Router} from "express";
 import {config} from "./config";
-import {db} from "./main";
+import {db,s3Client} from "./main";
 import {route, log} from "./decorators";
 import { QueryError } from "mysql2";
 import PoolConnection from "mysql2/typings/mysql/lib/PoolConnection";
@@ -82,6 +82,30 @@ function verify(r: Request, wr: Response): boolean {
         wr.end();
         return false;
     }
+}
+
+function insertImage(r: Request, wr: Response, url: string) {
+    let values = {
+        item_id: r.body.item_id,
+        url: url
+    }
+    db.getConnection((err,conn)=>{
+        if(err){
+            handleError(err,conn,wr);
+            return;
+        }
+        conn.query(cfg.schema.queries?.insert?.image,values,(err,result,fields)=>{
+            if(err){
+                handleError(err,conn,wr);
+                return;
+            }
+            console.log(result);
+            wr.setHeader("Content-Type","application/json");
+            wr.write(JSON.stringify({result,values}));
+            conn.release();
+            wr.end();
+        });
+    });
 }
 
 export class api {
@@ -346,33 +370,27 @@ export class api {
         });
     }
 
-    @log()
+    @log() // local server filesystem
     async uploadImages(r: Request, wr: Response) {
         if(!verify(r,wr)) {
             return;
         }
         console.log(r);
-        let values = {
-            item_id: r.body.item_id,
-            url: `/images/${r.file?.filename}`
-        }
-        db.getConnection((err,conn)=>{
-            if(err){
-                handleError(err,conn,wr);
-                return;
+        insertImage(r,wr,`/images/${r.file?.filename}`);
+    }
+
+    @log() // S3 compatible storage
+    async uploadImagesS3(r: Request, wr: Response) {
+        if(r.file && verify(r,wr)) {
+            console.log(r.file);
+            try {
+                await s3Client.putObject(process.env.S3_BUCKET as string,r.file?.originalname,r.file?.buffer);
+                const url = await s3Client.presignedGetObject(process.env.S3_BUCKET as string,r.file?.originalname);
+                insertImage(r,wr,url);
+            } catch(e:any) {
+                console.log('uploadImagesS3 failed:',e);
             }
-            conn.query(cfg.schema.queries?.insert?.image,values,(err,result,fields)=>{
-                if(err){
-                    handleError(err,conn,wr);
-                    return;
-                }
-                console.log(result);
-                wr.setHeader("Content-Type","application/json");
-                wr.write(JSON.stringify({result,values}));
-                conn.release();
-                wr.end();
-            });
-        });
+        }
     }
 
     @log()

@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.db = void 0;
+exports.db = exports.s3Client = void 0;
 const express_1 = __importDefault(require("express"));
 const dotenv = __importStar(require("dotenv"));
 const mysql2_1 = __importDefault(require("mysql2"));
@@ -30,6 +30,7 @@ const api_1 = require("./api");
 const multer_1 = __importDefault(require("multer"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
+const _minio = require("minio");
 var storage = multer_1.default.diskStorage({
     destination: './bin/images',
     filename: function (r, fl, cb) {
@@ -72,7 +73,20 @@ app.post('/login', _api.login);
 app.post('/register', _api.register);
 app.get('/user/:id', _api.getUser);
 app.get('/users', _api.getUsers);
-app.post('/images', upload.single('image'), _api.uploadImages);
+if (process.env.S3_ENABLE === "true") {
+    exports.s3Client = new _minio.Client({
+        endPoint: process.env.S3_ENDPOINT,
+        port: parseInt(process.env.S3_PORT, 10),
+        useSSL: JSON.parse(process.env.S3_USESSL),
+        accessKey: process.env.S3_ACCESSKEY,
+        secretKey: process.env.S3_SECRETKEY
+    });
+    exports.s3Client.makeBucket(process.env.S3_BUCKET, process.env.S3_REGION, (err) => { err ? console.log(err) : null; });
+    app.post('/images', multer_1.default({ storage: multer_1.default.memoryStorage() }).single('image'), _api.uploadImagesS3);
+}
+else {
+    app.post('/images', upload.single('image'), _api.uploadImages);
+}
 app.get('/verify', _api.verify);
 let server = app.listen(port, () => {
     console.log(`Listening on port ${port}...`);
