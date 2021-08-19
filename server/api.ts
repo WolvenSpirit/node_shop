@@ -240,6 +240,7 @@ export class api {
                     handleError(err,conn,wr);
                     return;
                 }
+                try{
                 connection.connect((err)=>{
                     if(err) {
                         console.log("Connection error:",err);
@@ -280,6 +281,7 @@ export class api {
                         });
                     });
                 });
+                } catch(e:any) {console.log(e.message)}
                 console.log(result);
                 wr.setHeader("Content-Type","application/json");
                 wr.write(JSON.stringify(result));

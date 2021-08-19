@@ -238,30 +238,31 @@ class api {
                     handleError(err, conn, wr);
                     return;
                 }
-                connection.connect((err) => {
-                    if (err) {
-                        console.log("Connection error:", err);
-                        return;
-                    }
-                    if (connection.alreadySecured) {
-                        console.log('Secure connection to SMTP server established');
-                    }
-                    connection.login({ credentials: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } }, (err) => {
+                try {
+                    connection.connect((err) => {
                         if (err) {
-                            console.log("Login error:", err);
+                            console.log("Connection error:", err);
                             return;
                         }
-                        console.log(r.body);
-                        let details = JSON.parse(r.body.details);
-                        let units = "";
-                        for (let i = 0; i < details.items.length; i++) {
-                            units += `\n
-                            Name: ${details?.items[i]?.name} Price/unit: ${details?.items[i]?.price} Amount: ${details?.items[i]?.count} \n`;
+                        if (connection.alreadySecured) {
+                            console.log('Secure connection to SMTP server established');
                         }
-                        connection.send({
-                            from: process.env.SMTP_USER,
-                            to: details.email,
-                        }, `Subject: Order ${r.body.name} 
+                        connection.login({ credentials: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } }, (err) => {
+                            if (err) {
+                                console.log("Login error:", err);
+                                return;
+                            }
+                            console.log(r.body);
+                            let details = JSON.parse(r.body.details);
+                            let units = "";
+                            for (let i = 0; i < details.items.length; i++) {
+                                units += `\n
+                            Name: ${details?.items[i]?.name} Price/unit: ${details?.items[i]?.price} Amount: ${details?.items[i]?.count} \n`;
+                            }
+                            connection.send({
+                                from: process.env.SMTP_USER,
+                                to: details.email,
+                            }, `Subject: Order ${r.body.name} 
                         \n\n\n
                         Transaction status: ${details.transaction.details.status} \n
                         Transaction ID: ${details.transaction.details.id} \n
@@ -269,14 +270,18 @@ class api {
                         ${units} \n
                         Total: ${details?.total} ${details?.transaction?.details?.purchase_units[0]?.amount?.currency_code} \n
                         `, (err, info) => {
-                            if (err) {
-                                console.log("Send error:", err);
-                            }
-                            console.log(info);
-                            connection.quit();
+                                if (err) {
+                                    console.log("Send error:", err);
+                                }
+                                console.log(info);
+                                connection.quit();
+                            });
                         });
                     });
-                });
+                }
+                catch (e) {
+                    console.log(e.message);
+                }
                 console.log(result);
                 wr.setHeader("Content-Type", "application/json");
                 wr.write(JSON.stringify(result));

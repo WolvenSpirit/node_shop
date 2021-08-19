@@ -26,7 +26,7 @@ var upload = multer({storage:storage});
 
 dotenv.config();
 
-const app = express();
+export const app = express();
 
 app.use(cors());
 
@@ -78,7 +78,7 @@ if(process.env.S3_ENABLE === "true") {
         accessKey: process.env.S3_ACCESSKEY as string,
         secretKey: process.env.S3_SECRETKEY as string
     });
-    s3Client.makeBucket(process.env.S3_BUCKET as string,process.env.S3_REGION as string,(err:any)=>{err ? console.log(err) : null});
+        s3Client.makeBucket(process.env.S3_BUCKET as string,process.env.S3_REGION as string,(err:any)=>{err ? console.log(err.message) : null});
     app.post('/images',multer({storage:multer.memoryStorage()}).single('image'),_api.uploadImagesS3);
 } else {
     app.post('/images',upload.single('image'),_api.uploadImages);
@@ -86,13 +86,13 @@ if(process.env.S3_ENABLE === "true") {
 
 app.get('/verify',_api.verify)
 
-let server = app.listen(port, ()=> {
+export let server = app.listen(port, ()=> {
 
     console.log(`Listening on port ${port}...`)
 
 });
 
-function shutdown(): void {
+export function shutdown(): void {
     console.log("Server closing")
     server.close()
     db.end()
