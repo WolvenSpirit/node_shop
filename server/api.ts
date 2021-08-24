@@ -318,9 +318,9 @@ export class api {
     async login(r: Request, wr: Response) {
         console.log(r.body);
         db.getConnection((err,conn)=>{
-            if(err) {
+            if(err || !r.body.username || !r.body.password) {
                 console.log(err);
-                wr.writeHead(500,'Internal server error');
+                err ? wr.writeHead(500,'Internal server error') : wr.writeHead(403,'Invalid credentials');
                 wr.end();
                 return;
             }
@@ -349,13 +349,13 @@ export class api {
     async register(r: Request, wr: Response) {
         console.log(r.body);
         db.getConnection((err: Error, conn: PoolConnection)=>{
-            r.body.password = hash(r.body.password.trimLeft().trimRight());
-            if(err) {
+            if(err || !r.body.password) {
                 console.log(err);
-                wr.writeHead(500,'Internal server error');
+                err ? wr.writeHead(500,'Internal server error') : wr.writeHead(403,'No password provided');
                 wr.end();
                 return;
-            }
+            };
+            r.body.password = hash(r.body.password.trimLeft().trimRight());
             conn.query(cfg.schema.queries.insert.user,{email:r.body.email,password:r.body.password,role:0},(err,result,fields)=>{
                 if(err) {
                     console.log(err);

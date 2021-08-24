@@ -23,29 +23,35 @@ chai.should();
              });
         });
 
-        describe("GET /login", () => {
+        describe("POST /login", () => {
             it("Serve the login view", (done) => {
                  let agent = chai.request(app);
-
-                      agent.get('/').end((err, res) => {
-                          res.should.have.status(200);
+                      agent.post('/login').end((err, res) => {
+                        if(err) {
+                            console.log(err.message);
+                        }
+                          res.should.have.status(403);
                           done();
                        });
 
              });
         });
 
-        describe("GET /register", () => {
+        describe("POST /register", () => {
             it("Serve the register view", (done) => {
                  let agent = chai.request(app);
 
-                      agent.get('/').end((err, res) => {
-                          res.should.have.status(200);
+                      agent.post('/register').end((err, res) => {
+                          if(err) {
+                              console.log(err.message);
+                          }
+                          res.should.have.status(403);
                           done();
                        });
 
              });
         });
+    
     });
 
 

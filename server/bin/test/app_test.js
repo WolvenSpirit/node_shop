@@ -39,6 +39,24 @@ describe("React-Shop", () => {
             });
         });
     });
+    describe("GET /login", () => {
+        it("Serve the login view", (done) => {
+            let agent = chai_1.default.request(main_1.app);
+            agent.get('/login').end((err, res) => {
+                res.should.have.status(200);
+                done();
+            });
+        });
+    });
+    describe("GET /register", () => {
+        it("Serve the register view", (done) => {
+            let agent = chai_1.default.request(main_1.app);
+            agent.get('/register').end((err, res) => {
+                res.should.have.status(200);
+                done();
+            });
+        });
+    });
 });
 after(async () => {
     main_1.server.close();

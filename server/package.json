@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "s": "node ./bin/main.js",
-    "test": "npx mocha -r ts-node/register 'test/*.ts' --exi"
+    "test": "npx mocha -r ts-node/register 'test/*.ts' --exit"
   },
   "keywords": [],
   "author": "",
