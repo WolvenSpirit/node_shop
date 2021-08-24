@@ -71,5 +71,5 @@ jobs:
           tags: # optional
           # Sets the target stage to build
           target: # optional
-    # GitHub Token used to authenticate against a repository for Git context
-    github-token: # optional, default is ${{ github.token }}
+          # GitHub Token used to authenticate against a repository for Git context
+          github-token: # optional, default is ${{ github.token }}
