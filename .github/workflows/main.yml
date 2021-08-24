@@ -29,4 +29,5 @@ jobs:
       - name: Install Docker and Docker Compose
         run: sudo apt-get install docker -y -f; sudo apt-get install docker-compose -y -f
       - name: Make build
+        working-directory: ./server
         run: make build
