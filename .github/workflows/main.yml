@@ -31,4 +31,5 @@ jobs:
       - name: Install server
         run: npm install ./server
       - name: build server
-        run: cd server; tsc .
+        working-directory: ./server
+        run: npx tsc .
