@@ -49,4 +49,4 @@ jobs:
           file: ./server/Dockerfile
           context: ./server
           push: true
-          tags: mihaid90/node-shop:latest
+          tags: mihaid90/node-shop:${GITHUB_SHA}
