@@ -28,6 +28,11 @@ jobs:
         run: sudo apt-get -y install make
       - name: Install Docker and Docker Compose
         run: sudo apt-get install docker -y -f; sudo apt-get install docker-compose -y -f
-      - name: Make build
+      - name: Build client
+        working-directory: ./client
+        run: npm run build
+      - name: Copy client build to server
+        run: cp -r client/build server/bin/client_dist
+      - name: Build server Docker image
         working-directory: ./server
-        run: make build
+        run: docker build -t s .
