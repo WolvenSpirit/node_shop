@@ -35,7 +35,7 @@ jobs:
         working-directory: ./client
         run: npm run build
       - name: Copy client build to server
-        run: cp -r client/build server/bin/client_dist     
+        run: cp -r client/build server/bin/client_dist
+      - uses: docker/build-push-action@v1
       - name: Build server Docker image
-        uses: docker/build-push-action@v1
         run: docker build -t s ./server/
