@@ -36,6 +36,11 @@ jobs:
         run: npm run build
       - name: Copy client build to server
         run: cp -r client/build server/bin/client_dist
-      - uses: docker/build-push-action@v1
-      - name: Build server Docker image
-        run: docker build -t s ./server/
+      - 
+        name: Build Docker image
+        uses: docker/build-push-action@v1
+        with:
+          file: ./server/Dockerfile
+          context: ./server
+          push: false
+          tags: node-shop:latest
