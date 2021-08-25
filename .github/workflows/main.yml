@@ -38,7 +38,7 @@ jobs:
         run: cp -r client/build server/bin/client_dist
       - 
         name: Build Docker image
-        uses: docker/build-push-action@v1
+        uses: docker/build-push-action@v2
         with:
           file: ./server/Dockerfile
           context: ./server
