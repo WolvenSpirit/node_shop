@@ -36,6 +36,8 @@ jobs:
         run: cp -r client/build server/bin/client_dist
       - name: setup-docker
         uses: docker-practice/actions-setup-docker@v1
+      - name: Add SHORT_SHA env referencing commit
+        run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
       -
         name: Login to Docker Hub
         uses: docker/login-action@v1
@@ -49,4 +51,4 @@ jobs:
           file: ./server/Dockerfile
           context: ./server
           push: true
-          tags: mihaid90/node-shop:${GITHUB_SHA}
+          tags: mihaid90/node-shop:${{env.SHORT_SHA}}
