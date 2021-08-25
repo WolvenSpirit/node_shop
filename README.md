@@ -1,4 +1,6 @@
-# <b>Node</b><small>Shop</small>
+[![Build and push to DockerHub](https://github.com/WolvenSpirit/node_shop/actions/workflows/main.yml/badge.svg)](https://github.com/WolvenSpirit/node_shop/actions/workflows/main.yml)
+
+<b>Node</b><small>Shop</small>
 
 ### Custom TypeScript Shop using Express framework for server and MySQL database.
 
