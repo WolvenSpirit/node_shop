@@ -31,6 +31,8 @@ jobs:
       - name: Install client dependencies
         working-directory: ./client
         run: npm install
+      - name: Configure environment variables
+        run: echo "CI=false" >> $GITHUB_ENV
       - name: Build client
         working-directory: ./client
         run: npm run build
