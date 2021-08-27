@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "s": "node ./bin/main.js",
-    "test": "npx mocha -r ts-node/register 'test/*.ts' --exit"
+    "test": "npx mocha -r ts-node/register 'test/*.ts' --exit",
+    "cover": "nyc --reporter=text npm test"
   },
   "keywords": [],
   "author": "",
@@ -41,6 +42,7 @@
     "@types/request": "^2.48.7",
     "chai": "^4.3.4",
     "chai-http": "^4.3.0",
+    "nyc": "^15.1.0",
     "request": "^2.88.2",
     "ts-node": "^10.2.1",
     "typescript": "^4.3.5"
