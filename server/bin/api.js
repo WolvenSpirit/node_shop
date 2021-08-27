@@ -127,9 +127,9 @@ function insertImage(r, wr, url) {
             console.log(result);
             wr.setHeader("Content-Type", "application/json");
             wr.write(JSON.stringify({ result, values }));
-            conn.release();
             wr.end();
         });
+        conn.release();
     });
 }
 class api {
@@ -202,9 +202,9 @@ class api {
                     return;
                 }
                 wr.write(JSON.stringify(result));
-                conn.release();
                 wr.end();
             });
+            conn.release();
         });
     }
     async patchItem(r, wr) {
@@ -225,9 +225,9 @@ class api {
                 console.log(result);
                 wr.setHeader("Content-Type", "application/json");
                 wr.write(JSON.stringify(result));
-                conn.release();
                 wr.end();
             });
+            conn.release();
         });
     }
     async postOrder(r, wr) {
@@ -285,9 +285,9 @@ class api {
                 console.log(result);
                 wr.setHeader("Content-Type", "application/json");
                 wr.write(JSON.stringify(result));
-                conn.release();
                 wr.end();
             });
+            conn.release();
         });
     }
     async patchOrder(r, wr) {
@@ -305,23 +305,24 @@ class api {
                 console.log(result);
                 wr.setHeader("Content-Type", "application/json");
                 wr.write(JSON.stringify(result));
-                conn.release();
                 wr.end();
             });
+            conn.release();
         });
     }
     async login(r, wr) {
         console.log(r.body);
         main_1.db.getConnection((err, conn) => {
-            if (err) {
+            if (err || !r.body.email || !r.body.password) {
                 console.log(err);
-                wr.writeHead(500, 'Internal server error');
+                err ? wr.writeHead(500, 'Internal server error') : wr.writeHead(403, 'Invalid credentials');
                 wr.end();
                 return;
             }
+            console.log("query", cfg.schema.queries.select.login);
             conn.query(cfg.schema.queries.select.login, r.body.email, (err, result, fields) => {
                 if (err) {
-                    console.log(err);
+                    console.log("login email query for hash", err);
                     wr.writeHead(403, 'Forbidden');
                     wr.end();
                     return;
@@ -343,13 +344,14 @@ class api {
     async register(r, wr) {
         console.log(r.body);
         main_1.db.getConnection((err, conn) => {
-            r.body.password = auth_1.hash(r.body.password.trimLeft().trimRight());
-            if (err) {
+            if (err || !r.body.password) {
                 console.log(err);
-                wr.writeHead(500, 'Internal server error');
+                err ? wr.writeHead(500, 'Internal server error') : wr.writeHead(403, 'No password provided');
                 wr.end();
                 return;
             }
+            ;
+            r.body.password = auth_1.hash(r.body.password.trimLeft().trimRight());
             conn.query(cfg.schema.queries.insert.user, { email: r.body.email, password: r.body.password, role: 0 }, (err, result, fields) => {
                 if (err) {
                     console.log(err);

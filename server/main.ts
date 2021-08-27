@@ -11,6 +11,30 @@ import Minio from 'minio';
 
 const _minio = require("minio");
 
+export let production:boolean = true;
+export let testRun:boolean = false;
+
+const productionFalse = 'production=false';
+const testRunTrue = 'test=true';
+
+try {
+    JSON.parse(process.env.PRODUCTION as string) === false ? production=false:production=true;
+} catch(e){
+    // Suppress error thrown by attempting to parse an undefined  variable.
+    // Error: "Unexpected token u in JSON at position 0"
+}; 
+
+process.argv.forEach((arg:string,k:number)=>{
+    switch(arg){
+    case productionFalse:
+        production = false;
+        break;
+    case testRunTrue:
+        testRun = true;
+        break;
+    }
+});
+
 export let s3Client: Minio.Client;
 
 var storage = multer.diskStorage({
@@ -53,7 +77,6 @@ let _api: api = new api();
 app.get('/',_api.index);
 app.get('/items',_api.getItems);
 app.get('/orders',_api.getOrders);
-// app.get('/main.js',_api.serveBundleJS);
 
 app.get('/item/:id',_api.getItem);
 app.post('/item',_api.postItem);
@@ -88,14 +111,38 @@ app.get('/verify',_api.verify)
 
 export let server = app.listen(port, ()=> {
 
+    console.debug(`[production]=(${production})\n[test_run]=(${testRun})\n`);
+
     console.log(`Listening on port ${port}...`)
 
 });
 
+function forceShutdown() {
+    setTimeout(()=>{
+        console.log("Gracefully shutting down failed, forcing shutdown...");
+        process.exit(1);
+    },3000);
+}
+
 export function shutdown(): void {
     console.log("Server closing")
-    server.close()
-    db.end()
+    if(server) {
+        server.close((err:any)=>{
+            if(err) {
+                console.log(err.message);
+            }
+        })
+    }
+    if (db) {
+    db.removeAllListeners();
+    db.end((err:any)=>{
+            if(err) {
+                db.removeAllListeners();
+                console.log(err.message);
+            }
+        })
+    }
+    forceShutdown();
 }
 
 process.on('SIGINT',()=>{

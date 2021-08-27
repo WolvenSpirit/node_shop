@@ -23,32 +23,39 @@ exports.config = void 0;
 const fs = __importStar(require("fs"));
 const dotenv = __importStar(require("dotenv"));
 const main_1 = require("./main");
+const load_test_data_1 = require("./load.test.data");
 dotenv.config();
+// Wait until the object is populated, wait() will return the object when it is populated;
+function wait(obj, fn, checkInterval) {
+    checkInterval ? checkInterval : checkInterval = 300;
+    let i = setInterval(() => {
+        obj !== undefined ? (() => { clearInterval(i); fn(obj); }) : null;
+    }, checkInterval);
+}
 class config {
     schema = {};
     template = "";
-    // public appjs: string = "";
     secret = "";
     constructor() {
         let data = fs.readFileSync(process.env.DB_Q, 'utf8');
         this.schema = JSON.parse(data);
         this.template = fs.readFileSync(process.env.ENTRYPOINT, 'utf8');
-        // this.appjs = fs.readFileSync(process.env.JS_BUNDLE as string,'utf8');
         this.secret = process.env.SECRET;
-        this.migrate(this.schema.migrate_up);
+        wait(main_1.db, (pool) => {
+            this.migrate(this.schema.migrate_up);
+            main_1.testRun ? load_test_data_1.migrate() : null;
+        });
     }
     migrate(obj) {
-        setTimeout(() => {
-            let keys = Object.keys(obj);
-            keys.forEach((v, i) => {
-                console.log(`Creating table ${v}`);
-                main_1.db.query(obj[v], (err, result, fields) => {
-                    if (err) {
-                        console.log(err.message);
-                    }
-                });
+        let keys = Object.keys(obj);
+        keys.forEach((v, i) => {
+            // console.log(`Creating table ${v}`);
+            main_1.db.query(obj[v], (err, result, fields) => {
+                if (err) {
+                    // console.log(err.message);
+                }
             });
-        }, 3000);
+        });
     }
 }
 exports.config = config;

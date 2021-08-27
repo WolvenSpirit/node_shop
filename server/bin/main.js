@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.shutdown = exports.server = exports.db = exports.app = exports.s3Client = void 0;
+exports.shutdown = exports.server = exports.db = exports.app = exports.s3Client = exports.testRun = exports.production = void 0;
 const express_1 = __importDefault(require("express"));
 const dotenv = __importStar(require("dotenv"));
 const mysql2_1 = __importDefault(require("mysql2"));
@@ -31,6 +31,28 @@ const multer_1 = __importDefault(require("multer"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
 const _minio = require("minio");
+exports.production = true;
+exports.testRun = false;
+const productionFalse = 'production=false';
+const testRunTrue = 'test=true';
+try {
+    JSON.parse(process.env.PRODUCTION) === false ? exports.production = false : exports.production = true;
+}
+catch (e) {
+    // Suppress error thrown by attempting to parse an undefined  variable.
+    // Error: "Unexpected token u in JSON at position 0"
+}
+;
+process.argv.forEach((arg, k) => {
+    switch (arg) {
+        case productionFalse:
+            exports.production = false;
+            break;
+        case testRunTrue:
+            exports.testRun = true;
+            break;
+    }
+});
 var storage = multer_1.default.diskStorage({
     destination: './bin/images',
     filename: function (r, fl, cb) {
@@ -60,7 +82,6 @@ let _api = new api_1.api();
 exports.app.get('/', _api.index);
 exports.app.get('/items', _api.getItems);
 exports.app.get('/orders', _api.getOrders);
-// app.get('/main.js',_api.serveBundleJS);
 exports.app.get('/item/:id', _api.getItem);
 exports.app.post('/item', _api.postItem);
 exports.app.patch('/item', _api.patchItem);
@@ -89,12 +110,34 @@ else {
 }
 exports.app.get('/verify', _api.verify);
 exports.server = exports.app.listen(port, () => {
+    console.debug(`[production]=(${exports.production})\n[test_run]=(${exports.testRun})\n`);
     console.log(`Listening on port ${port}...`);
 });
+function forceShutdown() {
+    setTimeout(() => {
+        console.log("Gracefully shutting down failed, forcing shutdown...");
+        process.exit(1);
+    }, 3000);
+}
 function shutdown() {
     console.log("Server closing");
-    exports.server.close();
-    exports.db.end();
+    if (exports.server) {
+        exports.server.close((err) => {
+            if (err) {
+                console.log(err.message);
+            }
+        });
+    }
+    if (exports.db) {
+        exports.db.removeAllListeners();
+        exports.db.end((err) => {
+            if (err) {
+                exports.db.removeAllListeners();
+                console.log(err.message);
+            }
+        });
+    }
+    forceShutdown();
 }
 exports.shutdown = shutdown;
 process.on('SIGINT', () => {

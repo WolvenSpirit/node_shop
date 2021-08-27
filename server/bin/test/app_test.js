@@ -39,20 +39,38 @@ describe("React-Shop", () => {
             });
         });
     });
-    describe("GET /login", () => {
+    describe("POST /login no credentials = 403", () => {
         it("Serve the login view", (done) => {
             let agent = chai_1.default.request(main_1.app);
-            agent.get('/login').end((err, res) => {
+            agent.post('/login').end((err, res) => {
+                if (err) {
+                    console.log(err.message);
+                }
+                res.should.have.status(403);
+                done();
+            });
+        });
+    });
+    describe("POST /loginwith credentials = 200", () => {
+        it("Authenticate successfully", (done) => {
+            let agent = chai_1.default.request(main_1.app);
+            agent.post('/login').set('Content-Type', 'application/json').send(JSON.stringify({ username: "admin3@mail.com", password: "toor" })).end((err, res) => {
+                if (err) {
+                    console.log(err.message);
+                }
                 res.should.have.status(200);
                 done();
             });
         });
     });
-    describe("GET /register", () => {
+    describe("POST /register no credentials = 403", () => {
         it("Serve the register view", (done) => {
             let agent = chai_1.default.request(main_1.app);
-            agent.get('/register').end((err, res) => {
-                res.should.have.status(200);
+            agent.post('/register').end((err, res) => {
+                if (err) {
+                    console.log(err.message);
+                }
+                res.should.have.status(403);
                 done();
             });
         });

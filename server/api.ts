@@ -102,9 +102,9 @@ function insertImage(r: Request, wr: Response, url: string) {
             console.log(result);
             wr.setHeader("Content-Type","application/json");
             wr.write(JSON.stringify({result,values}));
-            conn.release();
             wr.end();
         });
+        conn.release();
     });
 }
 
@@ -200,9 +200,9 @@ export class api {
                     return;
                 }
                 wr.write(JSON.stringify(result));
-                conn.release();
                 wr.end();
             });
+            conn.release();
         });
     }
 
@@ -225,9 +225,9 @@ export class api {
                 console.log(result);
                 wr.setHeader("Content-Type","application/json");
                 wr.write(JSON.stringify(result));
-                conn.release();
                 wr.end();
             });
+            conn.release();
         });
     }
 
@@ -285,10 +285,9 @@ export class api {
                 console.log(result);
                 wr.setHeader("Content-Type","application/json");
                 wr.write(JSON.stringify(result));
-                conn.release();
                 wr.end();
-
             });
+            conn.release();
         })
     }
 
@@ -308,9 +307,9 @@ export class api {
                 console.log(result);
                 wr.setHeader("Content-Type","application/json");
                 wr.write(JSON.stringify(result));
-                conn.release();
                 wr.end();
             });
+            conn.release();
         });
     }
 
@@ -318,15 +317,16 @@ export class api {
     async login(r: Request, wr: Response) {
         console.log(r.body);
         db.getConnection((err,conn)=>{
-            if(err || !r.body.username || !r.body.password) {
+            if(err || !r.body.email || !r.body.password) {
                 console.log(err);
                 err ? wr.writeHead(500,'Internal server error') : wr.writeHead(403,'Invalid credentials');
                 wr.end();
                 return;
             }
+            console.log("query",cfg.schema.queries.select.login);
             conn.query(cfg.schema.queries.select.login,r.body.email,(err,result: any,fields)=>{
                 if (err) {
-                    console.log(err);
+                    console.log("login email query for hash",err);
                     wr.writeHead(403,'Forbidden');
                     wr.end();
                     return;
@@ -337,7 +337,7 @@ export class api {
                     wr.write(JSON.stringify({Authorization: token}));
                     wr.end();
                 } else {
-                    wr.writeHead(403,"Forbidden")
+                    wr.writeHead(403,"Forbidden");
                     wr.end()
                 }
                 conn.release();
