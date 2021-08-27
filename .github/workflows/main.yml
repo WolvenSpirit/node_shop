@@ -58,9 +58,9 @@ jobs:
 #      - name: Test
 #        working-directory: ./server
 #        run: npm test
-      - name: Cover
-        working-directory: ./server
-        run: npm run cover
+#      - name: Cover
+#        working-directory: ./server
+#        run: npm run cover
       - name: Coverage upload to Codecov
         working-directory: ./server
         run: npx codecov
