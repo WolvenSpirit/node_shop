@@ -52,3 +52,9 @@ jobs:
           context: ./server
           push: true
           tags: mihaid90/node-shop:${{env.SHORT_SHA}}
+      - name: Test
+        run: npm test
+      - name: Cover
+        run: npm run cover
+      - name: Coverage upload to Codecov
+        run: npx codecov
