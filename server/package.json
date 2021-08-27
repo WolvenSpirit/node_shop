@@ -6,7 +6,7 @@
   "scripts": {
     "s": "node ./bin/main.js",
     "test": "npx mocha -r ts-node/register 'test/*.ts' --exit",
-    "cover": "nyc --reporter=text npm test"
+    "cover": "nyc --reporter=lcov npm test"
   },
   "keywords": [],
   "author": "",
