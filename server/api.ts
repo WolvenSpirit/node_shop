@@ -1,4 +1,4 @@
-import express, {NextFunction, Request, Response, Router} from "express";
+import express, {Request, Response, Router} from "express";
 import {config} from "./config";
 import {db,s3Client} from "./main";
 import {route, log} from "./decorators";

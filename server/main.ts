@@ -64,6 +64,10 @@ export const db: mysql.Pool = mysql.createPool({
     password: process.env.DB_PASSWORD
 });
 
+export function setDbMock(obj:any) {
+    
+}
+
 app.use(express.json());
 
 app.use(bodyParser.urlencoded({extended:true,limit:10000000}));
@@ -72,7 +76,7 @@ app.use('/images',express.static('bin/images'));
 app.use('/static/js',express.static('bin/client_dist/static/js'));
 app.use('/static/css',express.static('bin/client_dist/static/css'));
 
-let _api: api = new api();
+export let _api: api = new api();
 
 app.get('/',_api.index);
 app.get('/items',_api.getItems);
