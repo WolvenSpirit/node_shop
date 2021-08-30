@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">68% </span>
+                <span class="strong">84.62% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>17/25</span>
+                <span class='fraction'>22/26</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">25% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>2/8</span>
+                <span class='fraction'>4/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">37.5% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>3/8</span>
+                <span class='fraction'>6/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">73.91% </span>
+                <span class="strong">91.67% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>17/23</span>
+                <span class='fraction'>22/24</span>
             </div>
         
             
@@ -55,7 +55,7 @@
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
         </p>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -110,35 +110,35 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -155,7 +155,7 @@ dotenv.config();
 function wait(obj: any, fn: any, checkInterval?: number): void {
     checkInterval ? <span class="branch-0 cbranch-no" title="branch not covered" >checkInterval </span>: checkInterval = 300;
     let i = setInterval(()=&gt;{
-        obj !== undefined ? (<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >()=</span>&gt;{<span class="cstat-no" title="statement not covered" >clearInterval(i); <span class="cstat-no" title="statement not covered" ></span>fn(obj);}</span>)</span> : null;
+        obj !== undefined ? (<span class="fstat-no" title="function not covered" >()=</span>&gt;{<span class="cstat-no" title="statement not covered" >clearInterval(i); <span class="cstat-no" title="statement not covered" ></span>fn(obj);}</span>) : null;
     }, checkInterval);
 }
 &nbsp;
@@ -175,13 +175,13 @@ export class config {
         });
     }
 &nbsp;
-<span class="fstat-no" title="function not covered" >    migrate(</span>obj: any) {
-            let keys = <span class="cstat-no" title="statement not covered" >Object.keys(obj)</span>
-<span class="cstat-no" title="statement not covered" >            keys.forEach(<span class="fstat-no" title="function not covered" >(v</span>,i)=&gt;{</span>
+    migrate(obj: any): any | undefined {
+            let keys = Object.keys(obj)
+            keys.forEach((v,i)=&gt;{
                 // console.log(`Creating table ${v}`);
-<span class="cstat-no" title="statement not covered" >                db.query(obj[v],<span class="fstat-no" title="function not covered" >(e</span>rr,result,fields)=&gt;{</span>
-<span class="cstat-no" title="statement not covered" >                    if(err) {</span>
-                        // console.log(err.message);
+                db.query(obj[v],(err,result,fields)=&gt;{
+                    <span class="missing-if-branch" title="else path not taken" >E</span>if(err) {
+                        return err;
                     }
                 });
             });
@@ -193,7 +193,7 @@ export class config {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Mon Aug 30 2021 16:04:56 GMT+0800 (Taipei Standard Time)
+                at Mon Aug 30 2021 17:26:48 GMT+0800 (Taipei Standard Time)
             </div>
         </div>
         <script src="prettify.js"></script>
