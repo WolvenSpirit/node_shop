@@ -52,7 +52,7 @@ class config {
             // console.log(`Creating table ${v}`);
             main_1.db.query(obj[v], (err, result, fields) => {
                 if (err) {
-                    // console.log(err.message);
+                    return err;
                 }
             });
         });

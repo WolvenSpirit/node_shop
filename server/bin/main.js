@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.shutdown = exports.server = exports.db = exports.app = exports.s3Client = exports.testRun = exports.production = void 0;
+exports.shutdown = exports.server = exports._api = exports.setDbMock = exports.db = exports.app = exports.s3Client = exports.testRun = exports.production = void 0;
 const express_1 = __importDefault(require("express"));
 const dotenv = __importStar(require("dotenv"));
 const mysql2_1 = __importDefault(require("mysql2"));
@@ -73,27 +73,31 @@ exports.db = mysql2_1.default.createPool({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD
 });
+function setDbMock(obj) {
+    exports.db = obj;
+}
+exports.setDbMock = setDbMock;
 exports.app.use(express_1.default.json());
 exports.app.use(body_parser_1.default.urlencoded({ extended: true, limit: 10000000 }));
 exports.app.use('/images', express_1.default.static('bin/images'));
 exports.app.use('/static/js', express_1.default.static('bin/client_dist/static/js'));
 exports.app.use('/static/css', express_1.default.static('bin/client_dist/static/css'));
-let _api = new api_1.api();
-exports.app.get('/', _api.index);
-exports.app.get('/items', _api.getItems);
-exports.app.get('/orders', _api.getOrders);
-exports.app.get('/item/:id', _api.getItem);
-exports.app.post('/item', _api.postItem);
-exports.app.patch('/item', _api.patchItem);
-exports.app.delete('/item/:id', _api.deleteItem);
-exports.app.get('/order/:id', _api.getOrder);
-exports.app.post('/order', _api.postOrder);
-exports.app.patch('/order', _api.patchOrder);
-exports.app.delete('/order/:id', _api.deleteOrder);
-exports.app.post('/login', _api.login);
-exports.app.post('/register', _api.register);
-exports.app.get('/user/:id', _api.getUser);
-exports.app.get('/users', _api.getUsers);
+exports._api = new api_1.api();
+exports.app.get('/', exports._api.index);
+exports.app.get('/items', exports._api.getItems);
+exports.app.get('/orders', exports._api.getOrders);
+exports.app.get('/item/:id', exports._api.getItem);
+exports.app.post('/item', exports._api.postItem);
+exports.app.patch('/item', exports._api.patchItem);
+exports.app.delete('/item/:id', exports._api.deleteItem);
+exports.app.get('/order/:id', exports._api.getOrder);
+exports.app.post('/order', exports._api.postOrder);
+exports.app.patch('/order', exports._api.patchOrder);
+exports.app.delete('/order/:id', exports._api.deleteOrder);
+exports.app.post('/login', exports._api.login);
+exports.app.post('/register', exports._api.register);
+exports.app.get('/user/:id', exports._api.getUser);
+exports.app.get('/users', exports._api.getUsers);
 if (process.env.S3_ENABLE === "true") {
     exports.s3Client = new _minio.Client({
         endPoint: process.env.S3_ENDPOINT,
@@ -103,12 +107,12 @@ if (process.env.S3_ENABLE === "true") {
         secretKey: process.env.S3_SECRETKEY
     });
     exports.s3Client.makeBucket(process.env.S3_BUCKET, process.env.S3_REGION, (err) => { err ? console.log(err.message) : null; });
-    exports.app.post('/images', multer_1.default({ storage: multer_1.default.memoryStorage() }).single('image'), _api.uploadImagesS3);
+    exports.app.post('/images', multer_1.default({ storage: multer_1.default.memoryStorage() }).single('image'), exports._api.uploadImagesS3);
 }
 else {
-    exports.app.post('/images', upload.single('image'), _api.uploadImages);
+    exports.app.post('/images', upload.single('image'), exports._api.uploadImages);
 }
-exports.app.get('/verify', _api.verify);
+exports.app.get('/verify', exports._api.verify);
 exports.server = exports.app.listen(port, () => {
     console.debug(`[production]=(${exports.production})\n[test_run]=(${exports.testRun})\n`);
     console.log(`Listening on port ${port}...`);

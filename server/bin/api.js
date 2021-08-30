@@ -11,12 +11,6 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -24,21 +18,17 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.api = void 0;
+exports.api = exports.verify = exports.handleSelectAll = exports.handleUrlParamReq = exports.handleError = exports.cfg = void 0;
 const config_1 = require("./config");
 const main_1 = require("./main");
-const decorators_1 = require("./decorators");
 const auth_1 = require("./auth");
 const jwt = __importStar(require("jsonwebtoken"));
 const smtp_connection_1 = __importDefault(require("nodemailer/lib/smtp-connection"));
-const cfg = new config_1.config();
+exports.cfg = new config_1.config();
 let connection = new smtp_connection_1.default({
     port: parseInt(process.env.SMTP_PORT, 10),
     host: process.env.SMTP_HOST,
@@ -51,6 +41,7 @@ function handleError(err, conn, wr) {
         wr.end();
     }
 }
+exports.handleError = handleError;
 function handleUrlParamReq(r, wr, queryType, resource) {
     console.log(r.params);
     let n = parseInt(r.params.id, 10);
@@ -59,7 +50,7 @@ function handleUrlParamReq(r, wr, queryType, resource) {
             handleError(err, conn, wr);
             return;
         }
-        conn.query(cfg.schema.queries[queryType][resource], n, (err, result, fields) => {
+        conn.query(exports.cfg.schema.queries[queryType][resource], n, (err, result, fields) => {
             if (err) {
                 handleError(err, conn, wr);
                 return;
@@ -72,13 +63,14 @@ function handleUrlParamReq(r, wr, queryType, resource) {
         });
     });
 }
+exports.handleUrlParamReq = handleUrlParamReq;
 function handleSelectAll(r, wr, resource) {
     main_1.db.getConnection((err, conn) => {
         if (err) {
             handleError(err, conn, wr);
             return;
         }
-        conn.query(cfg.schema?.queries?.select[resource], (err, result, fields) => {
+        conn.query(exports.cfg.schema?.queries?.select[resource], (err, result, fields) => {
             if (err) {
                 handleError(err, conn, wr);
                 return;
@@ -91,9 +83,10 @@ function handleSelectAll(r, wr, resource) {
         });
     });
 }
+exports.handleSelectAll = handleSelectAll;
 function verify(r, wr) {
     try {
-        if (jwt.verify(r.headers?.authorization?.split(' ')[1], cfg.secret) === undefined) {
+        if (jwt.verify(r.headers?.authorization?.split(' ')[1], exports.cfg.secret) === undefined) {
             wr.writeHead(403, "Forbidden");
             console.log('jwt invalid token');
             wr.end();
@@ -109,6 +102,7 @@ function verify(r, wr) {
         return false;
     }
 }
+exports.verify = verify;
 function insertImage(r, wr, url) {
     let values = {
         item_id: r.body.item_id,
@@ -119,7 +113,7 @@ function insertImage(r, wr, url) {
             handleError(err, conn, wr);
             return;
         }
-        conn.query(cfg.schema.queries?.insert?.image, values, (err, result, fields) => {
+        conn.query(exports.cfg.schema.queries?.insert?.image, values, (err, result, fields) => {
             if (err) {
                 handleError(err, conn, wr);
                 return;
@@ -145,12 +139,12 @@ class api {
         handleSelectAll(r, wr, 'all_orders');
     }
     async index(r, wr) {
-        console.log(cfg.template);
-        wr.write(`${cfg.template}`);
+        console.log(exports.cfg.template);
+        wr.write(`${exports.cfg.template}`);
         wr.end();
     }
     /*
-    @log()
+    
     serveBundleJS(r: Request, wr: Response) {
         wr.setHeader("Content-Type","application/javascript");
         wr.write(cfg.appjs);
@@ -191,7 +185,7 @@ class api {
         handleUrlParamReq(r, wr, 'delete', 'order');
     }
     async postItem(r, wr) {
-        let q = cfg.schema.queries.insert.item;
+        let q = exports.cfg.schema.queries.insert.item;
         if (!verify(r, wr)) {
             return;
         }
@@ -217,7 +211,7 @@ class api {
                 handleError(err, conn, wr);
                 return;
             }
-            conn.query(cfg.schema.queries.update.item, r.body, (err, result, fields) => {
+            conn.query(exports.cfg.schema.queries.update.item, r.body, (err, result, fields) => {
                 if (err) {
                     handleError(err, conn, wr);
                     return;
@@ -233,7 +227,7 @@ class api {
     async postOrder(r, wr) {
         main_1.db.getConnection((err, conn) => {
             handleError(err, conn, wr);
-            conn.query(cfg.schema.queries.insert.order, r.body, (err, result, fields) => {
+            conn.query(exports.cfg.schema.queries.insert.order, r.body, (err, result, fields) => {
                 if (err) {
                     handleError(err, conn, wr);
                     return;
@@ -297,7 +291,7 @@ class api {
                 handleError(err, conn, wr);
                 return;
             }
-            conn.query(cfg.schema.queries.patch.order_paid, r.body, (err, result, fields) => {
+            conn.query(exports.cfg.schema.queries.patch.order_paid, r.body, (err, result, fields) => {
                 if (err) {
                     handleError(err, conn, wr);
                     return;
@@ -319,8 +313,8 @@ class api {
                 wr.end();
                 return;
             }
-            console.log("query", cfg.schema.queries.select.login);
-            conn.query(cfg.schema.queries.select.login, r.body.email, (err, result, fields) => {
+            console.log("query", exports.cfg.schema.queries.select.login);
+            conn.query(exports.cfg.schema.queries.select.login, r.body.email, (err, result, fields) => {
                 if (err) {
                     console.log("login email query for hash", err);
                     wr.writeHead(403, 'Forbidden');
@@ -328,7 +322,7 @@ class api {
                     return;
                 }
                 if (result[0].password !== undefined && auth_1.compare(r.body?.password, result[0].password)) {
-                    let token = jwt.sign({ id: result.id, email: result.email }, cfg.secret);
+                    let token = jwt.sign({ id: result.id, email: result.email }, exports.cfg.secret);
                     wr.setHeader("Content-Type", "application/json");
                     wr.write(JSON.stringify({ Authorization: token }));
                     wr.end();
@@ -352,7 +346,7 @@ class api {
             }
             ;
             r.body.password = auth_1.hash(r.body.password.trimLeft().trimRight());
-            conn.query(cfg.schema.queries.insert.user, { email: r.body.email, password: r.body.password, role: 0 }, (err, result, fields) => {
+            conn.query(exports.cfg.schema.queries.insert.user, { email: r.body.email, password: r.body.password, role: 0 }, (err, result, fields) => {
                 if (err) {
                     console.log(err);
                     wr.writeHead(403, 'Forbidden');
@@ -367,6 +361,7 @@ class api {
             });
         });
     }
+    // local server filesystem
     async uploadImages(r, wr) {
         if (!verify(r, wr)) {
             return;
@@ -374,6 +369,7 @@ class api {
         console.log(r);
         insertImage(r, wr, `/images/${r.file?.filename}`);
     }
+    // S3 compatible storage
     async uploadImagesS3(r, wr) {
         if (r.file && verify(r, wr)) {
             console.log(r.file);
@@ -395,114 +391,4 @@ class api {
         wr.end();
     }
 }
-__decorate([
-    decorators_1.log(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], api.prototype, "getItems", null);
-__decorate([
-    decorators_1.log(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], api.prototype, "getOrders", null);
-__decorate([
-    decorators_1.log(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], api.prototype, "index", null);
-__decorate([
-    decorators_1.log(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], api.prototype, "getItem", null);
-__decorate([
-    decorators_1.log(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], api.prototype, "getUser", null);
-__decorate([
-    decorators_1.log(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], api.prototype, "getUsers", null);
-__decorate([
-    decorators_1.log(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], api.prototype, "deleteItem", null);
-__decorate([
-    decorators_1.log(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], api.prototype, "getOrder", null);
-__decorate([
-    decorators_1.log(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], api.prototype, "deleteOrder", null);
-__decorate([
-    decorators_1.log(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], api.prototype, "postItem", null);
-__decorate([
-    decorators_1.log(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], api.prototype, "patchItem", null);
-__decorate([
-    decorators_1.log(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], api.prototype, "postOrder", null);
-__decorate([
-    decorators_1.log(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], api.prototype, "patchOrder", null);
-__decorate([
-    decorators_1.log(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], api.prototype, "login", null);
-__decorate([
-    decorators_1.log(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], api.prototype, "register", null);
-__decorate([
-    decorators_1.log() // local server filesystem
-    ,
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], api.prototype, "uploadImages", null);
-__decorate([
-    decorators_1.log() // S3 compatible storage
-    ,
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], api.prototype, "uploadImagesS3", null);
-__decorate([
-    decorators_1.log(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], api.prototype, "verify", null);
 exports.api = api;
