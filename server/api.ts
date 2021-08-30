@@ -8,7 +8,7 @@ import { compare, hash } from "./auth";
 import * as jwt from "jsonwebtoken";
 import SMTPConnection from "nodemailer/lib/smtp-connection";
 
-const cfg = new config();
+export const cfg = new config();
 
 let connection: SMTPConnection = new SMTPConnection({
     port:parseInt(process.env.SMTP_PORT as string,10),
@@ -16,7 +16,7 @@ let connection: SMTPConnection = new SMTPConnection({
     secure: true
 });
 
-function handleError(err:Error, conn: PoolConnection, wr: Response) {
+export function handleError(err:Error | undefined, conn: PoolConnection, wr: Response) {
     if(err) {
         console.log(err.message);
         conn.release();
@@ -24,7 +24,7 @@ function handleError(err:Error, conn: PoolConnection, wr: Response) {
     }
 }
 
-function handleUrlParamReq(r: Request, wr: Response, queryType: string, resource: string) {
+export function handleUrlParamReq(r: Request, wr: Response, queryType: string, resource: string) {
     console.log(r.params);
     let n = parseInt(r.params.id,10);
     db.getConnection((err,conn)=>{
@@ -46,7 +46,7 @@ function handleUrlParamReq(r: Request, wr: Response, queryType: string, resource
     });
 }
 
-function handleSelectAll(r: Request, wr: Response, resource: string) {
+export function handleSelectAll(r: Request, wr: Response, resource: string) {
     db.getConnection((err,conn)=> {
         if(err) {
             handleError(err,conn,wr)
@@ -66,7 +66,7 @@ function handleSelectAll(r: Request, wr: Response, resource: string) {
     });
 }
 
-function verify(r: Request, wr: Response): boolean {
+export function verify(r: Request, wr: Response): boolean {
     try{
         if (jwt.verify(r.headers?.authorization?.split(' ')[1] as string,cfg.secret) === undefined) {
             wr.writeHead(403,"Forbidden");

@@ -56,7 +56,7 @@ app.use(cors());
 
 const port = parseInt(process.env.PORT as string,10);
 
-export const db: mysql.Pool = mysql.createPool({
+export var db: mysql.Pool = mysql.createPool({
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT as string,10),
     database: process.env.DB_NAME,
@@ -65,7 +65,7 @@ export const db: mysql.Pool = mysql.createPool({
 });
 
 export function setDbMock(obj:any) {
-    
+    db = obj;
 }
 
 app.use(express.json());

@@ -11,9 +11,20 @@ export class mysqlMock {
     getConnection(fn: any) {
         var err,conn:any = {};
         conn.query = (query:any,params:any,cb:any) => {
-            cb(this.err,this.result,this.fields);
+            if(typeof cb === 'function') {
+                cb(this.err,this.result,this.fields);
+            }
         }
+        conn.release = () => {};
         return fn(err,conn)
+    }
+
+    removeAllListeners() {
+        return
+    }
+
+    end() {
+        return
     }
 
 }

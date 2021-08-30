@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">34.31% </span>
+                <span class="strong">39.09% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>82/239</span>
+                <span class='fraction'>95/243</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">24.69% </span>
+                <span class="strong">28.4% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>20/81</span>
+                <span class='fraction'>23/81</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">40% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>15/45</span>
+                <span class='fraction'>18/45</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">34.45% </span>
+                <span class="strong">39.26% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>82/238</span>
+                <span class='fraction'>95/242</span>
             </div>
         
             
@@ -481,37 +481,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -531,7 +511,27 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -879,7 +879,7 @@ import { compare, hash } from "./auth";
 import * as jwt from "jsonwebtoken";
 import SMTPConnection from "nodemailer/lib/smtp-connection";
 &nbsp;
-const cfg = new config();
+export const cfg = new config();
 &nbsp;
 let connection: SMTPConnection = new SMTPConnection({
     port:parseInt(process.env.SMTP_PORT as string,10),
@@ -887,43 +887,23 @@ let connection: SMTPConnection = new SMTPConnection({
     secure: true
 });
 &nbsp;
-function <span class="fstat-no" title="function not covered" >handleError(</span>err:Error, conn: PoolConnection, wr: Response) {
-<span class="cstat-no" title="statement not covered" >    if(err) {</span>
-<span class="cstat-no" title="statement not covered" >        console.log(err.message);</span>
-<span class="cstat-no" title="statement not covered" >        conn.release();</span>
-<span class="cstat-no" title="statement not covered" >        wr.end();</span>
+export function handleError(err:Error | undefined, conn: PoolConnection, wr: Response) {
+    if(err) {
+        console.log(err.message);
+        conn.release();
+        wr.end();
     }
 }
 &nbsp;
-function <span class="fstat-no" title="function not covered" >handleUrlParamReq(</span>r: Request, wr: Response, queryType: string, resource: string) {
-<span class="cstat-no" title="statement not covered" >    console.log(r.params);</span>
-    let n = <span class="cstat-no" title="statement not covered" >parseInt(r.params.id,10);</span>
-<span class="cstat-no" title="statement not covered" >    db.getConnection(<span class="fstat-no" title="function not covered" >(e</span>rr,conn)=&gt;{</span>
-<span class="cstat-no" title="statement not covered" >        if(err) {</span>
-<span class="cstat-no" title="statement not covered" >            handleError(err,conn,wr)</span>
-<span class="cstat-no" title="statement not covered" >            return;</span>
-        }
-<span class="cstat-no" title="statement not covered" >        conn.query(cfg.schema.queries[queryType][resource],n,<span class="fstat-no" title="function not covered" >(e</span>rr,result,fields)=&gt;{</span>
-<span class="cstat-no" title="statement not covered" >            if (err) {</span>
-<span class="cstat-no" title="statement not covered" >                handleError(err,conn,wr)</span>
-<span class="cstat-no" title="statement not covered" >                return;</span>
-            }
-<span class="cstat-no" title="statement not covered" >            console.log(result);</span>
-<span class="cstat-no" title="statement not covered" >            wr.setHeader("Content-Type","application/json");</span>
-<span class="cstat-no" title="statement not covered" >            wr.write(JSON.stringify(result));</span>
-<span class="cstat-no" title="statement not covered" >            conn.release();</span>
-<span class="cstat-no" title="statement not covered" >            wr.end();</span>
-        });
-    });
-}
-&nbsp;
-function handleSelectAll(r: Request, wr: Response, resource: string) {
-    db.getConnection((err,conn)=&gt; {
+export function handleUrlParamReq(r: Request, wr: Response, queryType: string, resource: string) {
+    console.log(r.params);
+    let n = parseInt(r.params.id,10);
+    db.getConnection((err,conn)=&gt;{
         <span class="missing-if-branch" title="if path not taken" >I</span>if(err) {
 <span class="cstat-no" title="statement not covered" >            handleError(err,conn,wr)</span>
 <span class="cstat-no" title="statement not covered" >            return;</span>
         }
-        conn.query(cfg.schema?.queries?.select[resource],(err,result,fields)=&gt; {
+        conn.query(cfg.schema.queries[queryType][resource],n,(err,result,fields)=&gt;{
             <span class="missing-if-branch" title="if path not taken" >I</span>if (err) {
 <span class="cstat-no" title="statement not covered" >                handleError(err,conn,wr)</span>
 <span class="cstat-no" title="statement not covered" >                return;</span>
@@ -937,7 +917,27 @@ function handleSelectAll(r: Request, wr: Response, resource: string) {
     });
 }
 &nbsp;
-function verify(r: Request, wr: Response): boolean {
+export function handleSelectAll(r: Request, wr: Response, resource: string) {
+    db.getConnection((err,conn)=&gt; {
+        <span class="missing-if-branch" title="if path not taken" >I</span>if(err) {
+<span class="cstat-no" title="statement not covered" >            handleError(err,conn,wr)</span>
+<span class="cstat-no" title="statement not covered" >            return;</span>
+        }
+        conn.query(cfg.schema?.queries?.select[resource],<span class="fstat-no" title="function not covered" >(e</span>rr,result,fields)=&gt; {
+<span class="cstat-no" title="statement not covered" >            if (err) {</span>
+<span class="cstat-no" title="statement not covered" >                handleError(err,conn,wr)</span>
+<span class="cstat-no" title="statement not covered" >                return;</span>
+            }
+<span class="cstat-no" title="statement not covered" >            console.log(result);</span>
+<span class="cstat-no" title="statement not covered" >            wr.setHeader("Content-Type","application/json");</span>
+<span class="cstat-no" title="statement not covered" >            wr.write(JSON.stringify(result));</span>
+<span class="cstat-no" title="statement not covered" >            conn.release();</span>
+<span class="cstat-no" title="statement not covered" >            wr.end();</span>
+        });
+    });
+}
+&nbsp;
+export function verify(r: Request, wr: Response): boolean {
     try{
         if (jwt.verify(r.headers?.authorization?.split(' ')[1] as string,cfg.secret) === undefined) {
 <span class="cstat-no" title="statement not covered" >            wr.writeHead(403,"Forbidden");</span>
@@ -1282,7 +1282,7 @@ export class api {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Mon Aug 30 2021 13:13:35 GMT+0800 (Taipei Standard Time)
+                at Mon Aug 30 2021 16:04:56 GMT+0800 (Taipei Standard Time)
             </div>
         </div>
         <script src="prettify.js"></script>

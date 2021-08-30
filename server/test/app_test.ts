@@ -3,7 +3,8 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import request from 'request';
 import * as dotenv from "dotenv";
-import {app, db, server, shutdown} from '../main';
+import {app, db, server, shutdown, setDbMock} from '../main';
+import mysql from "mysql2";
 
 dotenv.config();
 
@@ -11,6 +12,13 @@ chai.use(chaiHttp);
 chai.should();
 
     describe("React-Shop", () => {
+        setDbMock(mysql.createPool({
+            host: process.env.DB_HOST,
+            port: parseInt(process.env.DB_PORT as string,10),
+            database: process.env.DB_NAME,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD
+        }));
         describe("GET /", () => {
             it("Serve the front-end app", (done) => {
                  let agent = chai.request(app);
@@ -39,6 +47,13 @@ chai.should();
 
         describe("POST /loginwith credentials = 200", () => {
             it("Authenticate successfully", (done) => {
+                setDbMock(mysql.createPool({
+                    host: process.env.DB_HOST,
+                    port: parseInt(process.env.DB_PORT as string,10),
+                    database: process.env.DB_NAME,
+                    user: process.env.DB_USER,
+                    password: process.env.DB_PASSWORD
+                }));
                  let agent = chai.request(app);
                       agent.post('/login').set('Content-Type','application/json').send(JSON.stringify({email:"admin3@mail.com",password:"toor"})).end((err, res) => {
                         if(err) {
@@ -93,4 +108,5 @@ chai.should();
 after(async ()=>{
     server.close();
     shutdown();
+    db.end();
 });
