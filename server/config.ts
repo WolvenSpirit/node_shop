@@ -30,13 +30,13 @@ export class config {
         });
     }
 
-    migrate(obj: any) {
+    migrate(obj: any): any | undefined {
             let keys = Object.keys(obj)
             keys.forEach((v,i)=>{
                 // console.log(`Creating table ${v}`);
                 db.query(obj[v],(err,result,fields)=>{
                     if(err) {
-                        // console.log(err.message);
+                        return err;
                     }
                 });
             });

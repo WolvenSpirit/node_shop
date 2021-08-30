@@ -1,8 +1,6 @@
 import express, {Request, Response, Router} from "express";
 import {config} from "./config";
 import {db,s3Client} from "./main";
-import {route, log} from "./decorators";
-import { QueryError } from "mysql2";
 import PoolConnection from "mysql2/typings/mysql/lib/PoolConnection";
 import { compare, hash } from "./auth";
 import * as jwt from "jsonwebtoken";
@@ -113,12 +111,12 @@ export class api {
             
     }
 
-    @log()
+    
     async getItems(r: Request, wr: Response) {
         handleSelectAll(r,wr,'all_items');
     }
 
-    @log()
+    
     async getOrders(r: Request, wr: Response) {
         if(!verify(r,wr)) {
             return;
@@ -126,7 +124,7 @@ export class api {
         handleSelectAll(r,wr,'all_orders');
     }
 
-    @log()
+    
     async index(r: Request, wr: Response) {
         console.log(cfg.template);
         wr.write(`${cfg.template}`);
@@ -134,7 +132,7 @@ export class api {
     }
 
     /*
-    @log()
+    
     serveBundleJS(r: Request, wr: Response) {
         wr.setHeader("Content-Type","application/javascript");
         wr.write(cfg.appjs);
@@ -142,12 +140,12 @@ export class api {
     }
     */
 
-    @log()
+    
     async getItem(r: Request, wr: Response) {
         handleUrlParamReq(r,wr,'select','item');
     }
 
-    @log()
+    
     async getUser(r: Request, wr: Response) {
         if(!verify(r,wr)) {
             return;
@@ -155,7 +153,7 @@ export class api {
         handleUrlParamReq(r,wr,'select','user');
     }
 
-    @log()
+    
     async getUsers(r: Request, wr: Response) {
         if(!verify(r,wr)) {
             return;
@@ -163,7 +161,7 @@ export class api {
         handleSelectAll(r,wr,'all_users');
     }
 
-    @log()
+    
     async deleteItem(r: Request, wr: Response) {
         if(!verify(r,wr)) {
             return;
@@ -171,7 +169,7 @@ export class api {
         handleUrlParamReq(r,wr,'delete','item');
     }
 
-    @log()
+    
     async getOrder(r: Request, wr: Response) {
         if(!verify(r,wr)) {
             return;
@@ -179,7 +177,7 @@ export class api {
         handleUrlParamReq(r,wr,'select','order');
     }
 
-    @log()
+    
     async deleteOrder(r: Request, wr: Response) {
         if(!verify(r,wr)) {
             return;
@@ -187,7 +185,7 @@ export class api {
         handleUrlParamReq(r,wr,'delete','order');
     }
 
-    @log()
+    
     async postItem(r: Request, wr: Response) {
         let q: string = cfg.schema.queries.insert.item
         if(!verify(r,wr)) {
@@ -206,7 +204,7 @@ export class api {
         });
     }
 
-    @log()
+    
     async patchItem(r: Request, wr: Response) {
         console.log(r.body);
         if(!verify(r,wr)) {
@@ -231,7 +229,7 @@ export class api {
         });
     }
 
-    @log()
+    
     async postOrder(r: Request, wr: Response) {
         db.getConnection((err: Error, conn: PoolConnection)=>{
             handleError(err,conn,wr);
@@ -291,7 +289,7 @@ export class api {
         })
     }
 
-    @log()
+    
     async patchOrder(r: Request, wr: Response) {
         console.log(r.body);
         db.getConnection((err,conn)=>{
@@ -313,7 +311,7 @@ export class api {
         });
     }
 
-    @log()
+    
     async login(r: Request, wr: Response) {
         console.log(r.body);
         db.getConnection((err,conn)=>{
@@ -345,7 +343,7 @@ export class api {
         });
     }
 
-    @log()
+    
     async register(r: Request, wr: Response) {
         console.log(r.body);
         db.getConnection((err: Error, conn: PoolConnection)=>{
@@ -372,7 +370,7 @@ export class api {
         });
     }
 
-    @log() // local server filesystem
+     // local server filesystem
     async uploadImages(r: Request, wr: Response) {
         if(!verify(r,wr)) {
             return;
@@ -381,7 +379,7 @@ export class api {
         insertImage(r,wr,`/images/${r.file?.filename}`);
     }
 
-    @log() // S3 compatible storage
+     // S3 compatible storage
     async uploadImagesS3(r: Request, wr: Response) {
         if(r.file && verify(r,wr)) {
             console.log(r.file);
@@ -395,7 +393,7 @@ export class api {
         }
     }
 
-    @log()
+    
     async verify(r: Request, wr: Response) {
         if(!verify(r,wr)) {
             return;
